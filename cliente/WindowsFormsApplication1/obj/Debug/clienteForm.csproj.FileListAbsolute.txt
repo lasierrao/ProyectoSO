@@ -78,3 +78,20 @@ C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Semana 4\c
 C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Semana 4\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form1.resources
 C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Semana 4\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
 C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Semana 4\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.GenerateResource.Cache
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.pdb
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csprojResolveAssemblyReference.cache
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form1.resources
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO-master\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.GenerateResource.Cache
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csprojResolveAssemblyReference.cache
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form1.resources
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.GenerateResource.Cache
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.pdb
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\vr2\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form2.resources

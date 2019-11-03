@@ -22,7 +22,7 @@ namespace WindowsFormsApplication1
         private void Form1_Load(object sender, EventArgs e)
         {
 
-           
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -31,7 +31,7 @@ namespace WindowsFormsApplication1
             //al que deseamos conectarnos
             IPAddress direc = IPAddress.Parse(IP.Text);
             IPEndPoint ipep = new IPEndPoint(direc, 9050);
-            
+
 
             //Creamos el socket 
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -63,7 +63,7 @@ namespace WindowsFormsApplication1
                 //Recibimos la respuesta del servidor
                 byte[] msg2 = new byte[80];
                 server.Receive(msg2);
-                mensaje = Encoding.ASCII.GetString(msg2).Split (',')[0];
+                mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
                 MessageBox.Show("La longitud de tu nombre es: " + mensaje);
             }
             else
@@ -77,9 +77,9 @@ namespace WindowsFormsApplication1
                 byte[] msg2 = new byte[80];
                 server.Receive(msg2);
                 mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-              
 
-                if (mensaje=="SI")
+
+                if (mensaje == "SI")
                     MessageBox.Show("Tu nombre ES bonito.");
                 else
                     MessageBox.Show("Tu nombre NO bonito. Lo siento.");
@@ -88,7 +88,7 @@ namespace WindowsFormsApplication1
 
             // Se terminó el servicio. 
             // Nos desconectamos
-           
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -114,7 +114,8 @@ namespace WindowsFormsApplication1
             else
             {
                 //Asignamos el numero 11 para registrarnos
-                string mensaje = "11/" + Usuario + Contraseña;
+                string mensaje = "11/" + Usuario + "/" + Contraseña;
+                MessageBox.Show(mensaje);
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
@@ -125,27 +126,66 @@ namespace WindowsFormsApplication1
 
                 //Nos registramos con éxito
                 if (mensaje == "SI")
-                    MessageBox.Show("Tu nombre ES bonito.");
+                    MessageBox.Show("Te has registrado con ÉXITO!!!");
                 else
-                    MessageBox.Show("Tu nombre NO bonito. Lo siento.");
+                    MessageBox.Show("ERROR AL REGISTRARSE, Usuario ya eixistente.");
             }
-            
+
         }
 
         private void Loguearse_Click(object sender, EventArgs e)
         {
-            //Enviamos 2 strings
+            //Enviamos 2 strings usuario y contraseña
+            string Usuario = txtUser.Text;
+            string Contraseña = txtPassword.Text;
 
-            //Recibimos OK y podemos hacer consulta
+            //Asignamos el numero 12 para loguearnos
+            string mensaje = "12/" + Usuario + "/" + Contraseña;
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+
+            //Recibimos la respuesta del servidor
+            byte[] msg2 = new byte[80];
+            server.Receive(msg2);
+            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
+
+            //Nos registramos con éxito
+            if (mensaje == "SI")
+            {
+                MessageBox.Show("Te has logeado con ÉXITO!!!");
+                Form2 mostrar = new Form2();
+                mostrar.setServer(this.server);
+                mostrar.Show();
+            }
+            else
+            {
+                MessageBox.Show("ERROR AL LOGUEARSE, Usuario NO EXISTE.");
+            }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void nombre_TextChanged(object sender, EventArgs e)
         {
 
         }
 
-       
+        private void txtPassword_TextChanged(object sender, EventArgs e)
+        {
 
-     
+        }
+
+        private void btn_mostrar_Click(object sender, EventArgs e)
+        {
+            string mensaje = "13/entrar";
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+
+            //Recibimos la respuesta del servidor
+            byte[] msg2 = new byte[80];
+            server.Receive(msg2);
+            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
+            MessageBox.Show(mensaje);
+        }
+
+
     }
 }
