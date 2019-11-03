@@ -1,0 +1,351 @@
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <mysql.h>
+MYSQL *conn;
+void InicializarBD()
+{
+	
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	
+	//Creamos una conexion al servidor MYSQL 
+	conn = mysql_init(NULL);
+	if (conn==NULL) {
+		printf ("Error al crear la conexi\ufff3n: %u %s\n", 
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	//inicializar la conexin
+	conn = mysql_real_connect (conn, "localhost","root", "mysql", "Juego",0, NULL, 0);
+	if (conn==NULL) {
+		printf ("Error al inicializar la conexion: %u %s\n", 
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+}
+
+int Registrarse(char Usuario[20], char Contra[20])
+{
+	//Recibiremos un Usuario y contraseña.
+	//-Comprobamos que dicho Nombre de Usuario no este en la BD
+	//-Asignaremos el Identificador n+1, siendo n el ultimo.
+	//-Añadimos los 3 componentes a la BD.
+	int sock_conn, sock_listen, ret;
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	//MYSQL *conn;
+	int err;
+	char consulta1[200];
+	char insertar[200];
+	//Si el Usuario estan en la BD:
+	//Nos genera una tabla con el nombre del Usuario
+	strcpy (consulta1,"SELECT Jugador.Nombre FROM Jugador WHERE Jugador.Nombre =");
+	sprintf (consulta1, "%s'%s';",consulta1,Usuario);
+	err=mysql_query (conn, consulta1);
+	printf("LA consulta es: %s\n",consulta1);
+	if (err!=0) 
+	{
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	printf("Buscamos al jugador....\n");
+	//Si no encuentra el usuario, la tabla es NULL
+	//Cumplimos la condicion para registrarnos
+	if (row == NULL)
+	{
+		printf("Jugador no encontrado, lo añadimos!\n");
+		strcpy (insertar,"INSERT INTO Jugador (Nombre, Password) VALUES (");
+		sprintf (insertar,"%s'%s','%s');",insertar,Usuario,Contra);
+		
+		err=mysql_query (conn, insertar);
+		if (err!=0) 
+		{
+			printf ("Error al consultar datos de la base %u %s\n",
+					mysql_errno(conn), mysql_error(conn));
+			exit (1);
+		}
+		printf("Jugador añadido con exito!!!!!\n");
+		return 1;
+	}
+	
+	//Si tenemos el Uuario a registar en la BD:
+	//No podemos registrarnos con ese Nombre
+	else
+	{
+		return 0;
+	}
+}
+
+/*int Loguearse1(char Usuario1[20], char Contra1[20])*/
+/*{*/
+/*	int sock_conn, sock_listen, ret;*/
+/*	MYSQL_RES *resultado;*/
+/*	MYSQL_ROW row;*/
+/*	int err;*/
+/*	char consulta[200];*/
+//Nos genera una tabla con el nombre y la contraseña que hemos recibido como parametros
+/*	strcpy (consulta,"SELECT Jugador.Nombre, Jugador.Password FROM Jugador WHERE Jugador.Nombre =");*/
+/*	sprintf (consulta, "%s'%s'",consulta,Usuario1);*/
+/*	strcat (consulta," AND Jugador.Password =");*/
+/*	sprintf (consulta,"%s'%s'",consulta,Contra1);*/
+/*	printf("Consulta %s\n", consulta);*/
+/*	err=mysql_query (conn, consulta);*/
+/*	printf("He pasado este!\n");*/
+/*	if (err!=0) */
+/*	{*/
+/*		printf ("Error al consultar datos de la base %u %s\n",*/
+/*				mysql_errno(conn), mysql_error(conn));*/
+/*		exit (1);*/
+/*	}*/
+/*	printf("Obtengo resultado de la consulta\n");*/
+/*	resultado = mysql_store_result (conn);*/
+/*	row = mysql_fetch_row (resultado);*/
+/*	printf("Almaceno resultado consulta en row\n");*/
+
+/*	return 1;*/
+/*}*/
+
+
+
+int Loguearse(char Usuario1[20], char Contra1[20])
+{
+	//Tenemos que recibir un Usuario y contraseña, buscarlo en la BD
+	//Si el usuario esta registrado retornamos un 1 y damos paermiso 
+	//para que haga su consulta.
+	//char Usuario[20];
+	//char Contraseña[20];
+	int sock_conn, sock_listen, ret;
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	//MYSQL *conn;
+	int err;
+	char consulta[200];
+	//Nos genera una tabla con el nombre y la contraseña que hemos recibido como parametros
+	strcpy (consulta,"SELECT Jugador.Nombre, Jugador.Password FROM Jugador WHERE Jugador.Nombre =");
+	sprintf (consulta, "%s'%s'",consulta,Usuario1);
+	strcat (consulta," AND Jugador.Password =");
+	sprintf (consulta,"%s'%s'",consulta,Contra1);
+	printf("Consulta %s\n", consulta);
+	err=mysql_query (conn, consulta);
+	printf("He pasado este!\n");
+	if (err!=0) 
+	{
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	printf("Obtengo resultado de la consulta\n");
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	printf("Almaceno resultado consulta en row\n");
+	
+	//Al meter un usuario correcto pero una contraseña erronea
+	//La fila es NULL ya que no existira jugador con ese nombre y contraseña
+	if (row == NULL)
+	{
+		printf ("No se han obtenido datos en la consulta\n");
+		return 0;
+	}
+	
+	//Retornamos un 1, usuario logeado con éxito
+	//En un futuro podemos hacer que retorne el usuario (mas info)
+	else
+	{
+		printf ("se han obtenido datos en la consulta\n");
+		return 1;
+	}
+	
+	
+	//mysql_close (conn);
+	//exit(0); //Exit de donde???????
+}
+char *mostrarlista(char *p){
+	int sock_conn, sock_listen, ret;
+	MYSQL_RES *resultado;
+	MYSQL_ROW row;
+	//MYSQL *conn;
+	int err;
+	char consulta[200];
+	char nombres[200];
+	//Nos genera una tabla con el nombre y la contraseña que hemos recibido como parametros
+	strcpy (consulta,"SELECT Jugador.Nombre FROM Jugador");
+	printf("Consulta %s\n", consulta);
+	err=mysql_query (conn, consulta);
+	printf("He pasado este!\n");
+	if (err!=0) 
+	{
+		printf ("Error al consultar datos de la base %u %s\n",
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	printf("Obtengo resultado de la consulta\n");
+	resultado = mysql_store_result (conn);
+	row = mysql_fetch_row (resultado);
+	printf("Almaceno resultado consulta en row\n");
+	
+	//Al meter un usuario correcto pero una contraseña erronea
+	//La fila es NULL ya que no existira jugador con ese nombre y contraseña
+	if (row == NULL)
+	{
+		printf ("No se han obtenido datos en la consulta\n");
+		//return 'n';
+	}
+	
+	//Retornamos un 1, usuario logeado con éxito
+	//En un futuro podemos hacer que retorne el usuario (mas info)
+	else
+	{
+		
+		printf ("se han obtenido datos en la consulta\n");
+		//nombres = row[0];
+		sprintf(nombres,"%s",row[0]);
+		//string nombres = "";
+		while(row != NULL){
+			strcat(nombres,"-");
+			//la columna 0 contiene el nombre del usuario
+			strcat(nombres, row[0]);
+			//nombres = nombres + row[0];
+			//sprintf(nombres,"%s\n", row[0]);
+			//obtenemos la siguiente fila
+			row = mysql_fetch_row(resultado);
+		}
+		strcpy(p,nombres);
+		return p;
+	}
+}
+
+
+int main(int argc, char *argv[])
+{
+	
+	char *rows;
+	InicializarBD();
+	int sock_conn, sock_listen, ret;
+	struct sockaddr_in serv_adr;
+	char buff[512];
+	char buff2[512];
+	// INICIALITZACIONS
+	// Obrim el socket
+	if ((sock_listen = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+		printf("Error creant socket");
+	// Fem el bind al port
+	
+	
+	memset(&serv_adr, 0, sizeof(serv_adr));// inicialitza a zero serv_addr
+	serv_adr.sin_family = AF_INET;
+	
+	// asocia el socket a cualquiera de las IP de la m?quina. 
+	//htonl formatea el numero que recibe al formato necesario
+	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
+	// escucharemos en el port 9050
+	serv_adr.sin_port = htons(9050);
+	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
+		printf ("Error al bind");
+	//La cola de peticiones pendientes no podr? ser superior a 4
+	if (listen(sock_listen, 2) < 0)
+		printf("Error en el Listen");
+	
+	int i;
+	// Atenderemos solo 5 peticione
+	for(;;){
+		printf ("Escuchando\n");
+		
+		sock_conn = accept(sock_listen, NULL, NULL);
+		printf ("He recibido conexi?n\n");
+		//sock_conn es el socket que usaremos para este cliente
+		
+		// Ahora recibimos su nombre, que dejamos en buff
+		ret=read(sock_conn,buff, sizeof(buff));
+		printf ("Recibido\n");
+		
+		// Tenemos que a?adirle la marca de fin de string 
+		// para que no escriba lo que hay despues en el buffer
+		buff[ret]='\0';
+		
+		//Escribimos el nombre en la consola
+		
+		printf ("Se ha conectado: %s\n",buff);
+		
+		
+		char *p = strtok( buff, "/");
+		int codigo =  atoi (p);
+		printf ("%d\n",codigo);
+		
+		switch(codigo)
+		{
+			//REGISTRARSE
+		case 11 :
+			p = strtok(NULL, "/");
+			char Usuario[20];
+			strcpy (Usuario, p);
+			p = strtok(NULL, "/");
+			char Contra [20];
+			strcpy (Contra, p);
+			printf ("%s %s\n",Usuario,Contra);
+			if (Registrarse(Usuario,Contra) == 1)
+			{
+				printf ("SI\n");
+				strcpy (buff, "SI,");
+			}
+			else
+			{
+				printf("NO\n");
+				strcpy (buff, "NO,");
+			}
+			
+			printf ("%s\n", buff);
+			// Y lo enviamos
+			write (sock_conn,buff, strlen(buff));
+			//close(sock_conn);
+			break;
+			
+		case 12 :
+			//LOGUEARSE
+			//case 12 :
+			printf("Entra?");
+			p = strtok(NULL, "/");
+			char Usuario1[20];
+			int valorLoguearse;
+			strcpy (Usuario1, p);
+			p = strtok(NULL, "/");
+			char Contra1 [20];
+			strcpy (Contra1, p);
+			printf ("%s %s\n",Usuario1,Contra1);
+			valorLoguearse = Loguearse(Usuario1,Contra1);
+			printf("LA funcion retorna %d\n", valorLoguearse);
+			if (Loguearse(Usuario1,Contra1) == 1)
+			{
+				printf ("SI\n");
+				strcpy (buff, "SI,");
+			}
+			else
+			{
+				printf("NO\n");
+				strcpy (buff, "NO,");
+			}
+			printf ("%s\n", buff);
+			// Y lo enviamos
+			write (sock_conn,buff, strlen(buff));
+			//close(sock_conn);
+			break;
+		case 13:
+			//mostrarlista(&rows);
+			write(sock_conn, mostrarlista(&rows), strlen(mostrarlista(&rows)));
+			//write(sock_conn, rows, strlen(rows));
+			break;
+			
+			
+			//CONSULTAS
+			default :
+				printf ("NO existe consulta");
+		}
+	}
+}
