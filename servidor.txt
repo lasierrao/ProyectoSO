@@ -12,6 +12,7 @@ MYSQL *conn;
 int contador;
 void *AtenderCliente(void *socket)
 {
+	int res;
 	char usuarios[200];
 	char *rows;
 	int sock_conn;
@@ -101,6 +102,8 @@ void *AtenderCliente(void *socket)
 			//close(sock_conn);
 			break;
 		case 13:
+			res = mostrarlista(usuarios);
+			write(sock_conn,usuarios,strlen(usuarios));
 			//mostrarlista(usuarios);
 			//write(sock_conn, usuarios, strlen(usuarios));
 			//write(sock_conn, rows, strlen(rows));
@@ -231,12 +234,17 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	//char Contraseￃﾱa[20];
 	int sock_conn, sock_listen, ret;
 	MYSQL_RES *resultado;
+	MYSQL_RES *resultado2;
 	MYSQL_ROW row;
+	MYSQL_ROW row2;
 	//MYSQL *conn;
 	int err;
+	int err2;
+	int id;
 	char consulta[200];
+	char consulta2[200];
 	//Nos genera una tabla con el nombre y la contraseￃﾱa que hemos recibido como parametros
-	strcpy (consulta,"SELECT Jugador.Nombre, Jugador.Password FROM Jugador WHERE Jugador.Nombre =");
+	strcpy (consulta,"SELECT Jugador.Nombre, Jugador.Password, Jugador.Identificador FROM Jugador WHERE Jugador.Nombre =");
 	sprintf (consulta, "%s'%s'",consulta,Usuario1);
 	strcat (consulta," AND Jugador.Password =");
 	sprintf (consulta,"%s'%s'",consulta,Contra1);
@@ -267,6 +275,26 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	else
 	{
 		printf ("se han obtenido datos en la consulta\n");
+		strcpy (consulta2,"UPDATE Jugador SET Conectado= true WHERE Identificador=");
+		sprintf (consulta2, "%d;",row[2]);
+		err2=mysql_query (conn, consulta2);
+		printf("He pasado este!\n");
+		if (err2!=0) 
+		{
+			printf ("Error al consultar datos de la base %u %s\n",
+					mysql_errno(conn), mysql_error(conn));
+			exit (1);
+		}
+		printf("Obtengo resultado de la consulta\n");
+		resultado2 = mysql_store_result (conn);
+		row2 = mysql_fetch_row (resultado2);
+		if (row2 == NULL)
+		{
+			printf ("No se han obtenido datos en la consulta2\n");
+			return 0;
+		}else{
+			printf ("Se han obtenido datos en la consulta2\n");
+		}
 		return 1;
 	}
 	
@@ -274,16 +302,16 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	//mysql_close (conn);
 	//exit(0); //Exit de donde???????
 }
-char mostrarlista(){
+int mostrarlista(char nombres[200]){
 	int sock_conn, sock_listen, ret;
 	MYSQL_RES *resultado;
 	MYSQL_ROW row;
 	//MYSQL *conn;
 	int err;
 	char consulta[200];
-	char nombres[200];
+	//char nombres[200];
 	//Nos genera una tabla con el nombre y la contraseￃﾱa que hemos recibido como parametros
-	strcpy (consulta,"SELECT Jugador.Nombre FROM Jugador");
+	strcpy (consulta,"SELECT Jugador.Nombre FROM Jugador WHERE Jugador.Conectado=true;");
 	printf("Consulta %s\n", consulta);
 	err=mysql_query (conn, consulta);
 	printf("He pasado este!\n");
@@ -297,37 +325,39 @@ char mostrarlista(){
 	resultado = mysql_store_result (conn);
 	row = mysql_fetch_row (resultado);
 	printf("Almaceno resultado consulta en row\n");
-	
-	//Al meter un usuario correcto pero una contraseￃﾱa erronea
-	//La fila es NULL ya que no existira jugador con ese nombre y contraseￃﾱa
-	if (row == NULL)
+	nombres[0]='\0';
+		//Al meter un usuario correcto pero una contraseￃﾱa erronea
+		//La fila es NULL ya que no existira jugador con ese nombre y contraseￃﾱa
+	if(row == NULL)
 	{
-		printf ("No se han obtenido datos en la consulta\n");
-		//return 'n';
+			printf ("No se han obtenido datos en la consulta\n");
+			return -1;
+			//return 'n';
 	}
-	
-	//Retornamos un 1, usuario logeado con ￃﾩxito
-	//En un futuro podemos hacer que retorne el usuario (mas info)
-	else
-	{
 		
-		printf ("se han obtenido datos en la consulta\n");
-		//nombres = row[0];
-		sprintf(nombres,"%s",row[0]);
-		//string nombres = "";
-		while(row != NULL){
-			strcat(nombres,"-");
-			//la columna 0 contiene el nombre del usuario
-			strcat(nombres, row[0]);
-			//nombres = nombres + row[0];
-			//sprintf(nombres,"%s\n", row[0]);
-			//obtenemos la siguiente fila
-			row = mysql_fetch_row(resultado);
+		//Retornamos un 1, usuario logeado con ￃﾩxito
+		//En un futuro podemos hacer que retorne el usuario (mas info)
+		else
+		{
+			
+			printf ("se han obtenido datos en la consulta\n");
+			//nombres = row[0];
+			sprintf(nombres,"%s",row[0]);
+			//string nombres = "";
+			while(row != NULL){
+				strcat(nombres,"-");
+				//la columna 0 contiene el nombre del usuario
+				strcat(nombres, row[0]);
+				//nombres = nombres + row[0];
+				//sprintf(nombres,"%s\n", row[0]);
+				//obtenemos la siguiente fila
+				row = mysql_fetch_row(resultado);
+			}
+			nombres[strlen(nombres)-1]='\0';
+			//strcpy(p,nombres);
+			//return p;
+			return 0;
 		}
-		//strcpy(p,nombres);
-		//return p;
-		return nombres;
-	}
 }
 
 
@@ -365,7 +395,7 @@ int main(int argc, char *argv[])
 	int sockets[100];
 	pthread_t thread;
 	i = 0;
-		// Atenderemos solo 5 peticione
+	// Atenderemos solo 5 peticione
 	for(;;){
 		printf ("Escuchando\n");
 		
