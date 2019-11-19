@@ -51,45 +51,7 @@ namespace WindowsFormsApplication1
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (Longitud.Checked)
-            {
-                string mensaje = "1/" + nombre.Text;
-                // Enviamos al servidor el nombre tecleado
-                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-                server.Send(msg);
-
-                //Recibimos la respuesta del servidor
-                byte[] msg2 = new byte[80];
-                server.Receive(msg2);
-                mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-                MessageBox.Show("La longitud de tu nombre es: " + mensaje);
-            }
-            else
-            {
-                string mensaje = "2/" + nombre.Text;
-                // Enviamos al servidor el nombre tecleado
-                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-                server.Send(msg);
-
-                //Recibimos la respuesta del servidor
-                byte[] msg2 = new byte[80];
-                server.Receive(msg2);
-                mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-
-
-                if (mensaje == "SI")
-                    MessageBox.Show("Tu nombre ES bonito.");
-                else
-                    MessageBox.Show("Tu nombre NO bonito. Lo siento.");
-
-            }
-
-            // Se terminó el servicio. 
-            // Nos desconectamos
-
-        }
+        
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -185,6 +147,40 @@ namespace WindowsFormsApplication1
             mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
             MessageBox.Show(mensaje);
         }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void Actualizar_Click(object sender, EventArgs e)
+        {
+            //Asignamos el numero 19 pedir lista conectados
+            string mensaje = "19/";
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+            //Recibimos la respuesta del servidor
+            byte[] msg2 = new byte[80];
+            server.Receive(msg2);
+            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
+            //Separamos los conectados
+            string[] ListaSeparada;
+            ListaSeparada = mensaje.Split('/');
+
+            //Añadimos nueva fila
+            int n = dataGridView1.Rows.Add();
+            int i;
+
+            //Colocamos info:
+            for (i = 0; i < ListaSeparada.Length; i++)
+            {
+                dataGridView1.Rows[n].Cells[0].Value = ListaSeparada[i];
+            }
+        }
+
+
+
+
 
 
     }
