@@ -56,6 +56,9 @@ namespace WindowsFormsApplication1
         private void button3_Click(object sender, EventArgs e)
         {
             this.BackColor = Color.Gray;
+            string mensaje = "0/";
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
             server.Shutdown(SocketShutdown.Both);
             server.Close();
 
@@ -115,9 +118,6 @@ namespace WindowsFormsApplication1
             if (mensaje == "SI")
             {
                 MessageBox.Show("Te has logeado con ÉXITO!!!");
-                Form2 mostrar = new Form2();
-                mostrar.setServer(this.server);
-                mostrar.Show();
             }
             else
             {
@@ -137,7 +137,7 @@ namespace WindowsFormsApplication1
 
         private void btn_mostrar_Click(object sender, EventArgs e)
         {
-            string mensaje = "13/entrar";
+            string mensaje = "19/entrar";
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
 
