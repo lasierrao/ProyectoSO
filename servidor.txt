@@ -130,7 +130,7 @@ void *AtenderCliente(void *socket)
 			}
 			printf ("%s\n", respuesta);
 			// Y lo enviamos
-			write (sock_conn,respuesta, strlen(respuestaw));
+			write (sock_conn,respuesta, strlen(respuesta));
 			//close(sock_conn);
 			break;
 		case 19:

@@ -13,6 +13,7 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
+        private DataTable tabla;
         Socket server;
         public Form1()
         {
@@ -155,6 +156,19 @@ namespace WindowsFormsApplication1
 
         private void Actualizar_Click(object sender, EventArgs e)
         {
+            tabla = new DataTable();
+            //crear columna y fila
+            DataColumn column;
+            DataRow row;
+            //Crear la columna Usuario
+            column = new DataColumn();
+            column.DataType = System.Type.GetType("System.String");
+            column.ColumnName = "Usuario";
+            column.ReadOnly = true;
+            column.Unique = true;
+            //añadir a la tabla
+            this.tabla.Columns.Add(column);
+            
             //Asignamos el numero 19 pedir lista conectados
             string mensaje = "19/";
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
@@ -166,16 +180,17 @@ namespace WindowsFormsApplication1
             //Separamos los conectados
             string[] ListaSeparada;
             ListaSeparada = mensaje.Split('/');
-
-            //Añadimos nueva fila
-            int n = dataGridView1.Rows.Add();
             int i;
-
-            //Colocamos info:
+            //Colocamos info en la tabla
             for (i = 0; i < ListaSeparada.Length; i++)
             {
-                dataGridView1.Rows[n].Cells[0].Value = ListaSeparada[i];
+                row = tabla.NewRow();
+                row["Usuario"] = ListaSeparada[i];
+                tabla.Rows.Add(row);
+                ListaSeparada = mensaje.Split('/');
             }
+            //añadimos la tabla al grid
+            dataGridView1.DataSource = tabla;
         }
 
 
