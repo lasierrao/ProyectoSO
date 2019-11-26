@@ -67,7 +67,7 @@
             this.IP.Name = "IP";
             this.IP.Size = new System.Drawing.Size(193, 26);
             this.IP.TabIndex = 2;
-            this.IP.Text = "192.168.56.102";
+            this.IP.Text = "192.168.56.101";
             // 
             // button1
             // 

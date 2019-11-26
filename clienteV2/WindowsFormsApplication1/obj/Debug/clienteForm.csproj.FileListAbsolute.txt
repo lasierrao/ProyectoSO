@@ -122,3 +122,12 @@ C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyec
 C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form2.resources
 C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
 C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.GenerateResource.Cache
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.pdb
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\clienteForm.csprojResolveAssemblyReference.cache
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form1.resources
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form2.resources
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
+C:\Users\Gollo Pollo\Documents\OSCAR LASIERRA\UPC\Sistemas Operativos\Proyecto V2\ProyectoSO\clienteV2\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.GenerateResource.Cache

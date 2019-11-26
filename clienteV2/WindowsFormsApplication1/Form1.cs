@@ -31,7 +31,7 @@ namespace WindowsFormsApplication1
             //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
             //al que deseamos conectarnos
             IPAddress direc = IPAddress.Parse(IP.Text);
-            IPEndPoint ipep = new IPEndPoint(direc, 9050);
+            IPEndPoint ipep = new IPEndPoint(direc, 9052);
 
 
             //Creamos el socket 
@@ -56,6 +56,15 @@ namespace WindowsFormsApplication1
 
         private void button3_Click(object sender, EventArgs e)
         {
+            string mensaje = "20/";
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+
+            //No necesitamos recibir respuesta
+            //byte[] msg2 = new byte[80];
+            //server.Receive(msg2);
+            //mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
+
             this.BackColor = Color.Gray;
             server.Shutdown(SocketShutdown.Both);
             server.Close();
@@ -116,9 +125,9 @@ namespace WindowsFormsApplication1
             if (mensaje == "SI")
             {
                 MessageBox.Show("Te has logeado con ÉXITO!!!");
-                Form2 mostrar = new Form2();
-                mostrar.setServer(this.server);
-                mostrar.Show();
+                //Form2 mostrar = new Form2();
+                //mostrar.setServer(this.server);
+                //mostrar.Show();
             }
             else
             {
@@ -168,7 +177,10 @@ namespace WindowsFormsApplication1
             column.Unique = true;
             //añadir a la tabla
             this.tabla.Columns.Add(column);
-            
+           
+            //Limpiamos info de la tabla
+            tabla.Rows.Clear();
+
             //Asignamos el numero 19 pedir lista conectados
             string mensaje = "19/";
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
@@ -181,6 +193,8 @@ namespace WindowsFormsApplication1
             string[] ListaSeparada;
             ListaSeparada = mensaje.Split('/');
             int i;
+            
+            //tabla.Columns.Clear();
             //Colocamos info en la tabla
             for (i = 0; i < ListaSeparada.Length; i++)
             {
