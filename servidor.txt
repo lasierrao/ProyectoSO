@@ -1,3 +1,4 @@
+//-std=c99 `mysql_config --cflags --libs`
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -20,8 +21,23 @@ typedef struct{
 	Usuario usuarios[MAX];
 	int num;
 }Conectados;
-Conectados lista_conec;
 
+Conectados lista_conec;//Se crea la lista de conectados
+//pthread_mutex_t mutex = //declarar mutex//Se usa cuando todos usan una variable en comun 
+//---------------------Ampliación-------------------------
+int RecogerSocket(Conectados *l,char numero[1]){
+	int respuesta;
+	if(numero[0] == '0'){
+		respuesta = l->usuarios[0].socket;
+	}else if(numero[0] == '1'){
+		respuesta = l->usuarios[l->num - 1].socket;
+	}else{
+		respuesta = -1;
+	}
+	printf("Numero del socket:%d\n",respuesta);
+	return respuesta;
+}
+//------------------------------------------------------------
 int AddUserConect(char usuario[20], int socket, Conectados *l){
 	strcpy(l->usuarios[l->num].nombre,usuario);
 	l->usuarios[l->num].socket = socket;//Se guarda el socket para luego poder invitar a un usuario a jugar
@@ -35,10 +51,12 @@ void UpdateConectados(Conectados *l){
 		strcat(conectados, l->usuarios[i].nombre);
 		strcat(conectados,"/");
 	}
+	printf("Respuesta: %s\n", conectados);
 	//Para informar a todos los demas usuarios
 	for(i = 0; i < l->num; i++){
 		write(l->usuarios[i].socket,conectados,strlen(conectados));
 	}
+	printf("Informaci￳n enviada a los otros usuarios");
 }
 void *AtenderCliente(void *socket)
 {
@@ -55,7 +73,7 @@ void *AtenderCliente(void *socket)
 	int ret;
 	
 	int terminar = 0;
-	//El cliente podr￡ hacer muchas peticiones
+	//El cliente podr￯﾿ﾡ hacer muchas peticiones
 	//mientras terminar sea igual a 0
 	while(terminar ==0){
 		ret=read(sock_conn,peticion, sizeof(peticion));
@@ -72,7 +90,7 @@ void *AtenderCliente(void *socket)
 		//-----------Crear una funcion para usar theader aqui?
 		char *p = strtok( peticion, "/");
 		int codigo =  atoi (p);
-		printf ("%d\n",codigo);
+		printf ("case: %d\n",codigo);
 		
 		switch(codigo)
 		{
@@ -141,6 +159,15 @@ void *AtenderCliente(void *socket)
 			//write(sock_conn, usuarios,	 strlen(usuarios));
 			//write(sock_conn, rows, strlen(rows));
 			break;
+		case 15://------------ampliacion-----------------
+			printf("Entra?");
+			p = strtok(NULL, "/");
+			char num[1];
+			strcpy (num, p);
+			int res = RecogerSocket(&lista_conec,num);
+			sprintf(respuesta,"%d",res);
+			write(sock_conn,respuesta, strlen(respuesta));
+			break;
 		case 0:
 			terminar = -1;
 			break;
@@ -177,10 +204,10 @@ void InicializarBD()
 
 int Registrarse(char Usuario[20], char Contra[20])
 {
-	//Recibiremos un Usuario y contraseￃﾱa.
+	//Recibiremos un Usuario y contrase￯﾿ﾃ￯ﾾﾱa.
 	//-Comprobamos que dicho Nombre de Usuario no este en la BD
 	//-Asignaremos el Identificador n+1, siendo n el ultimo.
-	//-Aￃﾱadimos los 3 componentes a la BD.
+	//-A￯﾿ﾃ￯ﾾﾱadimos los 3 componentes a la BD.
 	int sock_conn, sock_listen, ret;
 	MYSQL_RES *resultado;
 	MYSQL_ROW row;
@@ -207,7 +234,7 @@ int Registrarse(char Usuario[20], char Contra[20])
 	//Cumplimos la condicion para registrarnos
 	if (row == NULL)
 	{
-		printf("Jugador no encontrado, lo aￃﾱadimos!\n");
+		printf("Jugador no encontrado, lo a￯﾿ﾃ￯ﾾﾱadimos!\n");
 		strcpy (insertar,"INSERT INTO Jugador (Nombre, Password) VALUES (");
 		sprintf (insertar,"%s'%s','%s');",insertar,Usuario,Contra);
 		
@@ -218,7 +245,7 @@ int Registrarse(char Usuario[20], char Contra[20])
 					mysql_errno(conn), mysql_error(conn));
 			exit (1);
 		}
-		printf("Jugador aￃﾱadido con exito!!!!!\n");
+		printf("Jugador a￯﾿ﾃ￯ﾾﾱadido con exito!!!!!\n");
 		return 1;
 	}
 	
@@ -232,11 +259,11 @@ int Registrarse(char Usuario[20], char Contra[20])
 
 int Loguearse(char Usuario1[20], char Contra1[20])
 {
-	//Tenemos que recibir un Usuario y contraseￃﾱa, buscarlo en la BD
+	//Tenemos que recibir un Usuario y contrase￯﾿ﾃ￯ﾾﾱa, buscarlo en la BD
 	//Si el usuario esta registrado retornamos un 1 y damos paermiso 
 	//para que haga su consulta.
 	//char Usuario[20];
-	//char Contraseￃﾱa[20];
+	//char Contrase￯﾿ﾃ￯ﾾﾱa[20];
 	int sock_conn, sock_listen, ret;
 	MYSQL_RES *resultado;
 	MYSQL_ROW row;
@@ -244,7 +271,7 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	int err;
 	int id;
 	char consulta[200];
-	//Nos genera una tabla con el nombre y la contraseￃﾱa que hemos recibido como parametros
+	//Nos genera una tabla con el nombre y la contrase￯﾿ﾃ￯ﾾﾱa que hemos recibido como parametros
 	strcpy (consulta,"SELECT Jugador.Nombre, Jugador.Password, Jugador.Identificador FROM Jugador WHERE Jugador.Nombre =");
 	sprintf (consulta, "%s'%s'",consulta,Usuario1);
 	strcat (consulta," AND Jugador.Password =");
@@ -263,15 +290,15 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	row = mysql_fetch_row (resultado);
 	printf("Almaceno resultado consulta en row\n");
 	
-	//Al meter un usuario correcto pero una contraseￃﾱa erronea
-	//La fila es NULL ya que no existira jugador con ese nombre y contraseￃﾱa
+	//Al meter un usuario correcto pero una contrase￯﾿ﾃ￯ﾾﾱa erronea
+	//La fila es NULL ya que no existira jugador con ese nombre y contrase￯﾿ﾃ￯ﾾﾱa
 	if (row == NULL)
 	{
 		printf ("No se han obtenido datos en la consulta\n");
 		return 0;
 	}
 	
-	//Retornamos un 1, usuario logeado con ￃﾩxito
+	//Retornamos un 1, usuario logeado con ￯﾿ﾃ￯ﾾﾩxito
 	//En un futuro podemos hacer que retorne el usuario (mas info)
 	else
 	{
@@ -291,7 +318,7 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	int err;
 	char consulta[200];
 	//char nombres[200];
-	//Nos genera una tabla con el nombre y la contraseￃﾱa que hemos recibido como parametros
+	//Nos genera una tabla con el nombre y la contrase￯﾿ﾃ￯ﾾﾱa que hemos recibido como parametros
 	strcpy (consulta,"SELECT Jugador.Nombre FROM Jugador WHERE Jugador.Conectado=true;");
 	printf("Consulta %s\n", consulta);
 	err=mysql_query (conn, consulta);
@@ -307,8 +334,8 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	row = mysql_fetch_row (resultado);
 	printf("Almaceno resultado consulta en row\n");
 	nombres[0]='\0';
-		//Al meter un usuario correcto pero una contraseￃﾱa erronea
-		//La fila es NULL ya que no existira jugador con ese nombre y contraseￃﾱa
+		//Al meter un usuario correcto pero una contrase￯﾿ﾃ￯ﾾﾱa erronea
+		//La fila es NULL ya que no existira jugador con ese nombre y contrase￯﾿ﾃ￯ﾾﾱa
 	if(row == NULL)
 	{
 			printf ("No se han obtenido datos en la consulta\n");
@@ -316,7 +343,7 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 			//return 'n';
 	}
 		
-		//Retornamos un 1, usuario logeado con ￃﾩxito
+		//Retornamos un 1, usuario logeado con ￯﾿ﾃ￯ﾾﾩxito
 		//En un futuro podemos hacer que retorne el usuario (mas info)
 		else
 		{

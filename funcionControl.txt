@@ -1,0 +1,22 @@
+int RecogerSocket(Conectados *l,char num[1]){
+	if(num == "0"){
+		return l->usuarios[0].socket;
+	}else if(num == "1"){
+		return l->usuarios[l->num - 1].socket;
+	}else{
+		return -1;
+	}
+}
+int RecogerSocket(Conectados *l,void *n){
+	int *s;
+	int num;
+	s = (int *)n;
+	num = n;
+	if(num == 0){
+		return l->usuarios[0].socket;
+	}else if(num == 1){
+		return l->usuarios[l->num - 1].socket;
+	}else{
+		return -1;
+	}
+}

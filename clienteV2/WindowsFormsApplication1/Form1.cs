@@ -179,7 +179,7 @@ namespace WindowsFormsApplication1
             mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
             //Separamos los conectados
             string[] ListaSeparada;
-            ListaSeparada = mensaje.Split('/');
+            ListaSeparada = mensaje.Split('\0');
             int i;
             //Colocamos info en la tabla
             for (i = 0; i < ListaSeparada.Length; i++)
@@ -193,10 +193,18 @@ namespace WindowsFormsApplication1
             dataGridView1.DataSource = tabla;
         }
 
-
-
-
-
-
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string num = textBoxNum.Text;
+            //Asignamos el numero 20
+            string mensaje = "15/" + num;
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+            //Recibimos la respuesta del servidor
+            byte[] msg2 = new byte[80];
+            server.Receive(msg2);
+            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
+            label2.Text = mensaje;
+        }
     }
 }
