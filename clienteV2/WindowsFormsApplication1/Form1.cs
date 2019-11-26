@@ -21,7 +21,7 @@ namespace WindowsFormsApplication1
         {
             InitializeComponent();
             direc = IPAddress.Parse("192.168.56.101");//IP.Text);
-            ipep = new IPEndPoint(direc, 9050);
+            ipep = new IPEndPoint(direc, 9051);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -39,7 +39,31 @@ namespace WindowsFormsApplication1
 
         private void bntConectar_Click(object sender, EventArgs e)
         {
+            //Creamos el socket 
+            server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            try
+            {
+                server.Connect(ipep);//Intentamos conectar el socket
+                this.BackColor = Color.Green;
+                MessageBox.Show("Conectado");
 
+            }
+            catch (SocketException ex)
+            {
+                //Si hay excepcion imprimimos error y salimos del programa con return 
+                MessageBox.Show("No he podido conectar con el servidor");
+                return;
+            }
+            txtUsuario.Enabled = true;
+            txtContraseña.Enabled = true;
+            txtReContraseña.Enabled = true;
+            txtUser.Enabled = true;
+            txtPassword.Enabled = true;
+            Registrarse.Enabled = true;
+            Loguearse.Enabled = true;
+            Desconectar.Enabled = true;
+            Actualizar.Enabled = true;
+            btnConectar.Enabled = false;
         }
 
         
