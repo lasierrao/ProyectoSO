@@ -15,40 +15,30 @@ namespace WindowsFormsApplication1
     {
         private DataTable tabla;
         Socket server;
+        IPAddress direc;
+        IPEndPoint ipep;
         public Form1()
         {
             InitializeComponent();
+            direc = IPAddress.Parse("192.168.56.101");//IP.Text);
+            ipep = new IPEndPoint(direc, 9050);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-
+            txtUsuario.Enabled = false;
+            txtContraseña.Enabled = false;
+            txtReContraseña.Enabled = false;
+            txtUser.Enabled = false;
+            txtPassword.Enabled = false;
+            Registrarse.Enabled = false;
+            Loguearse.Enabled = false;
+            Desconectar.Enabled = false;
+            Actualizar.Enabled = false;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void bntConectar_Click(object sender, EventArgs e)
         {
-            //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
-            //al que deseamos conectarnos
-            IPAddress direc = IPAddress.Parse(IP.Text);
-            IPEndPoint ipep = new IPEndPoint(direc, 9050);
-
-
-            //Creamos el socket 
-            server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            try
-            {
-                server.Connect(ipep);//Intentamos conectar el socket
-                this.BackColor = Color.Green;
-                MessageBox.Show("Conectado");
-
-            }
-            catch (SocketException ex)
-            {
-                //Si hay excepcion imprimimos error y salimos del programa con return 
-                MessageBox.Show("No he podido conectar con el servidor");
-                return;
-            }
 
         }
 
@@ -56,6 +46,15 @@ namespace WindowsFormsApplication1
 
         private void button3_Click(object sender, EventArgs e)
         {
+            string mensaje = "20/";
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+
+            //No necesitamos recibir respuesta
+            //byte[] msg2 = new byte[80];
+            //server.Receive(msg2);
+            //mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
+
             this.BackColor = Color.Gray;
             server.Shutdown(SocketShutdown.Both);
             server.Close();
@@ -116,9 +115,9 @@ namespace WindowsFormsApplication1
             if (mensaje == "SI")
             {
                 MessageBox.Show("Te has logeado con ÉXITO!!!");
-                Form2 mostrar = new Form2();
-                mostrar.setServer(this.server);
-                mostrar.Show();
+                //Form2 mostrar = new Form2();
+                //mostrar.setServer(this.server);
+                //mostrar.Show();
             }
             else
             {
@@ -168,7 +167,10 @@ namespace WindowsFormsApplication1
             column.Unique = true;
             //añadir a la tabla
             this.tabla.Columns.Add(column);
-            
+           
+            //Limpiamos info de la tabla
+            tabla.Rows.Clear();
+
             //Asignamos el numero 19 pedir lista conectados
             string mensaje = "19/";
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
@@ -181,6 +183,10 @@ namespace WindowsFormsApplication1
             string[] ListaSeparada;
             ListaSeparada = mensaje.Split('\0');
             int i;
+            ListaSeparada = mensaje.Split('/');
+            ListaSeparada = mensaje.Split('/');
+            
+            //tabla.Columns.Clear();
             //Colocamos info en la tabla
             for (i = 0; i < ListaSeparada.Length; i++)
             {
@@ -193,18 +199,6 @@ namespace WindowsFormsApplication1
             dataGridView1.DataSource = tabla;
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            string num = textBoxNum.Text;
-            //Asignamos el numero 20
-            string mensaje = "15/" + num;
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-            label2.Text = mensaje;
-        }
+        
     }
 }

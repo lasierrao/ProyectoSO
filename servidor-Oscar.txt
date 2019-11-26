@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <stdio.h>
 #include <mysql.h>
+#include <stdbool.h>
 #include <pthread.h>
 #define NUM_THREADS	8
 #define MAX 100
@@ -43,6 +44,38 @@ int AddUserConect(char usuario[20], int socket, Conectados *l){
 	l->usuarios[l->num].socket = socket;//Se guarda el socket para luego poder invitar a un usuario a jugar
 	l->num++;
 }
+
+int QuitUserConect(char usuario[20], int socket, Conectados *l)
+{
+	//Buscamos usuario al que queremos eliminar en el vector "Conectados"
+	int i;
+	bool encontrado = false;
+	
+	
+	for (i=0;i<l->num;i++)
+	{
+		if (strcmp(l->usuarios[i].nombre,usuario) == 0)
+		{
+			encontrado = true;
+			int j = i;
+			for (j;j < (l->num-1);j++)
+			{
+				strcpy(l->usuarios[j].nombre,l->usuarios[j+1].nombre);
+				l->usuarios[j].socket=l->usuarios[j+1].socket;
+			}
+		}
+		
+		
+	}
+	if (encontrado){
+		printf("QuitUserConect encontrado, user: %s\n", usuario);
+		l->num--;
+	}else{
+		printf("QuitUserConect NO encontrado, user: %s\n", usuario);
+	}
+	
+}
+
 void UpdateConectados(Conectados *l){
 	int i = 0;
 	char conectados[200];
@@ -51,7 +84,11 @@ void UpdateConectados(Conectados *l){
 		strcat(conectados, l->usuarios[i].nombre);
 		strcat(conectados,"/");
 	}
+<<<<<<< HEAD:servidor.txt
 	printf("Respuesta: %s\n", conectados);
+=======
+	printf("Lisata de los usuarios conectados: %s\n",conectados);
+>>>>>>> a07b640ac30fcca7b5a235d20663de7feeac3a88:servidor-Oscar.txt
 	//Para informar a todos los demas usuarios
 	for(i = 0; i < l->num; i++){
 		write(l->usuarios[i].socket,conectados,strlen(conectados));
@@ -126,14 +163,13 @@ void *AtenderCliente(void *socket)
 			printf("Entra?");
 			p = strtok(NULL, "/");
 			char Usuario1[20];
-			int valorLoguearse;
 			strcpy (Usuario1, p);
 			p = strtok(NULL, "/");
 			char Contra1 [20];
 			strcpy (Contra1, p);
-			printf ("%s %s\n",Usuario1,Contra1);
-			valorLoguearse = Loguearse(Usuario1,Contra1);
-			printf("LA funcion retorna %d\n", valorLoguearse);
+			//printf ("%s %s\n",Usuario1,Contra1);
+			//valorLoguearse = Loguearse(Usuario1,Contra1);
+			//printf("LA funcion retorna %d\n", valorLoguearse);
 			if (Loguearse(Usuario1,Contra1) == 1)
 			{
 				printf ("SI\n");
@@ -151,6 +187,7 @@ void *AtenderCliente(void *socket)
 			write (sock_conn,respuesta, strlen(respuesta));
 			//close(sock_conn);
 			break;
+			
 		case 19:
 			UpdateConectados(&lista_conec);
 			//res = mostrarlista(usuarios);
@@ -159,6 +196,7 @@ void *AtenderCliente(void *socket)
 			//write(sock_conn, usuarios,	 strlen(usuarios));
 			//write(sock_conn, rows, strlen(rows));
 			break;
+<<<<<<< HEAD:servidor.txt
 		case 15://------------ampliacion-----------------
 			printf("Entra?");
 			p = strtok(NULL, "/");
@@ -169,16 +207,24 @@ void *AtenderCliente(void *socket)
 			write(sock_conn,respuesta, strlen(respuesta));
 			break;
 		case 0:
+=======
+			
+		case 20: //El usuario se desconecta y actualizamos lista Conectados
+			QuitUserConect(Usuario1,sock_conn,&lista_conec);
+			//UpdateConectados(&lista_conec);
+>>>>>>> a07b640ac30fcca7b5a235d20663de7feeac3a88:servidor-Oscar.txt
 			terminar = -1;
+			printf ("Salimos del bucle\n");
 			break;
 			
 			//CONSULTAS
 			default :
 				printf ("NO existe consulta");
+				
 		} 
 	}
 	close(sock_conn); 
-	pthread_exit(0);
+	//pthread_exit(0);
 }
 void InicializarBD()
 {
@@ -311,6 +357,7 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	//exit(0); //Exit de donde???????
 }
 /*int mostrarlista(char nombres[200]){
+<<<<<<< HEAD:servidor.txt
 	int sock_conn, sock_listen, ret;
 	MYSQL_RES *resultado;
 	MYSQL_ROW row;
@@ -366,6 +413,63 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 			//return p;
 			return 0;
 		}
+=======
+int sock_conn, sock_listen, ret;
+MYSQL_RES *resultado;
+MYSQL_ROW row;
+//MYSQL *conn;
+int err;
+char consulta[200];
+//char nombres[200];
+//Nos genera una tabla con el nombre y la contraseￃﾱa que hemos recibido como parametros
+strcpy (consulta,"SELECT Jugador.Nombre FROM Jugador WHERE Jugador.Conectado=true;");
+printf("Consulta %s\n", consulta);
+err=mysql_query (conn, consulta);
+printf("He pasado este!\n");
+if (err!=0) 
+{
+printf ("Error al consultar datos de la base %u %s\n",
+mysql_errno(conn), mysql_error(conn));
+exit (1);
+}
+printf("Obtengo resultado de la consulta\n");
+resultado = mysql_store_result (conn);
+row = mysql_fetch_row (resultado);
+printf("Almaceno resultado consulta en row\n");
+nombres[0]='\0';
+//Al meter un usuario correcto pero una contraseￃﾱa erronea
+//La fila es NULL ya que no existira jugador con ese nombre y contraseￃﾱa
+if(row == NULL)
+{
+printf ("No se han obtenido datos en la consulta\n");
+return -1;
+//return 'n';
+}
+
+//Retornamos un 1, usuario logeado con ￃﾩxito
+//En un futuro podemos hacer que retorne el usuario (mas info)
+else
+{
+
+printf ("se han obtenido datos en la consulta\n");
+//nombres = row[0];
+sprintf(nombres,"%s",row[0]);
+//string nombres = "";
+while(row != NULL){
+strcat(nombres,"-");
+//la columna 0 contiene el nombre del usuario
+strcat(nombres, row[0]);
+//nombres = nombres + row[0];
+//sprintf(nombres,"%s\n", row[0]);
+//obtenemos la siguiente fila
+row = mysql_fetch_row(resultado);
+}
+nombres[strlen(nombres)-1]='\0';
+//strcpy(p,nombres);
+//return p;
+return 0;
+}
+>>>>>>> a07b640ac30fcca7b5a235d20663de7feeac3a88:servidor-Oscar.txt
 }
 */
 
@@ -391,7 +495,7 @@ int main(int argc, char *argv[])
 	//htonl formatea el numero que recibe al formato necesario
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
 	// escucharemos en el port 9050
-	serv_adr.sin_port = htons(9050);
+	serv_adr.sin_port = htons(9051);
 	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
 		printf ("Error al bind");
 	//-------------Poner un bucle para los theader y que se puedan conectar 4 personas------

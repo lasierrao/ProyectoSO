@@ -28,9 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.IP = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnConectar = new System.Windows.Forms.Button();
             this.Desconectar = new System.Windows.Forms.Button();
             this.Registrarse = new System.Windows.Forms.Button();
             this.Loguearse = new System.Windows.Forms.Button();
@@ -46,44 +44,23 @@
             this.Password = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Actualizar = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBoxNum = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
+            // btnConectar
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(31, 47);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(31, 25);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "IP";
-            // 
-            // IP
-            // 
-            this.IP.Location = new System.Drawing.Point(84, 52);
-            this.IP.Name = "IP";
-            this.IP.Size = new System.Drawing.Size(130, 20);
-            this.IP.TabIndex = 2;
-            this.IP.Text = "192.168.56.102";
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(287, 46);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(84, 31);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "conectar";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnConectar.Location = new System.Drawing.Point(319, 294);
+            this.btnConectar.Name = "btnConectar";
+            this.btnConectar.Size = new System.Drawing.Size(135, 40);
+            this.btnConectar.TabIndex = 4;
+            this.btnConectar.Text = "Conectar";
+            this.btnConectar.UseVisualStyleBackColor = true;
+            this.btnConectar.Click += new System.EventHandler(this.bntConectar_Click);
             // 
             // Desconectar
             // 
-            this.Desconectar.Location = new System.Drawing.Point(463, 298);
-            this.Desconectar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Desconectar.Location = new System.Drawing.Point(517, 294);
+            this.Desconectar.Margin = new System.Windows.Forms.Padding(2);
             this.Desconectar.Name = "Desconectar";
             this.Desconectar.Size = new System.Drawing.Size(132, 40);
             this.Desconectar.TabIndex = 7;
@@ -93,8 +70,8 @@
             // 
             // Registrarse
             // 
-            this.Registrarse.Location = new System.Drawing.Point(463, 96);
-            this.Registrarse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Registrarse.Location = new System.Drawing.Point(318, 210);
+            this.Registrarse.Margin = new System.Windows.Forms.Padding(2);
             this.Registrarse.Name = "Registrarse";
             this.Registrarse.Size = new System.Drawing.Size(91, 35);
             this.Registrarse.TabIndex = 8;
@@ -104,8 +81,8 @@
             // 
             // Loguearse
             // 
-            this.Loguearse.Location = new System.Drawing.Point(463, 228);
-            this.Loguearse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Loguearse.Location = new System.Drawing.Point(517, 160);
+            this.Loguearse.Margin = new System.Windows.Forms.Padding(2);
             this.Loguearse.Name = "Loguearse";
             this.Loguearse.Size = new System.Drawing.Size(91, 36);
             this.Loguearse.TabIndex = 9;
@@ -115,48 +92,48 @@
             // 
             // txtUsuario
             // 
-            this.txtUsuario.Location = new System.Drawing.Point(463, 22);
-            this.txtUsuario.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtUsuario.Location = new System.Drawing.Point(319, 60);
+            this.txtUsuario.Margin = new System.Windows.Forms.Padding(2);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(68, 20);
+            this.txtUsuario.Size = new System.Drawing.Size(111, 20);
             this.txtUsuario.TabIndex = 10;
             // 
             // txtContraseña
             // 
-            this.txtContraseña.Location = new System.Drawing.Point(463, 60);
-            this.txtContraseña.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtContraseña.Location = new System.Drawing.Point(319, 115);
+            this.txtContraseña.Margin = new System.Windows.Forms.Padding(2);
             this.txtContraseña.Name = "txtContraseña";
-            this.txtContraseña.Size = new System.Drawing.Size(68, 20);
+            this.txtContraseña.Size = new System.Drawing.Size(111, 20);
             this.txtContraseña.TabIndex = 11;
             // 
             // txtReContraseña
             // 
-            this.txtReContraseña.Location = new System.Drawing.Point(557, 60);
-            this.txtReContraseña.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtReContraseña.Location = new System.Drawing.Point(319, 176);
+            this.txtReContraseña.Margin = new System.Windows.Forms.Padding(2);
             this.txtReContraseña.Name = "txtReContraseña";
-            this.txtReContraseña.Size = new System.Drawing.Size(68, 20);
+            this.txtReContraseña.Size = new System.Drawing.Size(111, 20);
             this.txtReContraseña.TabIndex = 12;
             // 
             // txtUser
             // 
-            this.txtUser.Location = new System.Drawing.Point(463, 162);
-            this.txtUser.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtUser.Location = new System.Drawing.Point(517, 60);
+            this.txtUser.Margin = new System.Windows.Forms.Padding(2);
             this.txtUser.Name = "txtUser";
-            this.txtUser.Size = new System.Drawing.Size(68, 20);
+            this.txtUser.Size = new System.Drawing.Size(101, 20);
             this.txtUser.TabIndex = 13;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(463, 196);
-            this.txtPassword.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtPassword.Location = new System.Drawing.Point(517, 115);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(2);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(68, 20);
+            this.txtPassword.Size = new System.Drawing.Size(101, 20);
             this.txtPassword.TabIndex = 14;
             // 
             // Usuario
             // 
             this.Usuario.AutoSize = true;
-            this.Usuario.Location = new System.Drawing.Point(460, 6);
+            this.Usuario.Location = new System.Drawing.Point(316, 43);
             this.Usuario.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.Usuario.Name = "Usuario";
             this.Usuario.Size = new System.Drawing.Size(43, 13);
@@ -166,7 +143,7 @@
             // Contraseña
             // 
             this.Contraseña.AutoSize = true;
-            this.Contraseña.Location = new System.Drawing.Point(460, 45);
+            this.Contraseña.Location = new System.Drawing.Point(316, 89);
             this.Contraseña.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.Contraseña.Name = "Contraseña";
             this.Contraseña.Size = new System.Drawing.Size(61, 13);
@@ -176,7 +153,7 @@
             // RepetirContraseña
             // 
             this.RepetirContraseña.AutoSize = true;
-            this.RepetirContraseña.Location = new System.Drawing.Point(555, 45);
+            this.RepetirContraseña.Location = new System.Drawing.Point(315, 152);
             this.RepetirContraseña.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.RepetirContraseña.Name = "RepetirContraseña";
             this.RepetirContraseña.Size = new System.Drawing.Size(95, 13);
@@ -186,7 +163,7 @@
             // User
             // 
             this.User.AutoSize = true;
-            this.User.Location = new System.Drawing.Point(463, 148);
+            this.User.Location = new System.Drawing.Point(514, 43);
             this.User.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.User.Name = "User";
             this.User.Size = new System.Drawing.Size(29, 13);
@@ -196,7 +173,7 @@
             // Password
             // 
             this.Password.AutoSize = true;
-            this.Password.Location = new System.Drawing.Point(462, 181);
+            this.Password.Location = new System.Drawing.Point(514, 89);
             this.Password.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.Password.Name = "Password";
             this.Password.Size = new System.Drawing.Size(53, 13);
@@ -206,18 +183,18 @@
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(68, 116);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dataGridView1.Location = new System.Drawing.Point(46, 43);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(160, 97);
+            this.dataGridView1.Size = new System.Drawing.Size(213, 202);
             this.dataGridView1.TabIndex = 20;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // Actualizar
             // 
-            this.Actualizar.Location = new System.Drawing.Point(89, 242);
-            this.Actualizar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Actualizar.Location = new System.Drawing.Point(93, 266);
+            this.Actualizar.Margin = new System.Windows.Forms.Padding(2);
             this.Actualizar.Name = "Actualizar";
             this.Actualizar.Size = new System.Drawing.Size(123, 35);
             this.Actualizar.TabIndex = 21;
@@ -225,40 +202,11 @@
             this.Actualizar.UseVisualStyleBackColor = true;
             this.Actualizar.Click += new System.EventHandler(this.Actualizar_Click);
             // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(128, 344);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 22;
-            this.button2.Text = "EnviarNum";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // textBoxNum
-            // 
-            this.textBoxNum.Location = new System.Drawing.Point(114, 318);
-            this.textBoxNum.Name = "textBoxNum";
-            this.textBoxNum.Size = new System.Drawing.Size(100, 20);
-            this.textBoxNum.TabIndex = 23;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(135, 392);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 13);
-            this.label2.TabIndex = 24;
-            this.label2.Text = "Respuesta";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(741, 487);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBoxNum);
-            this.Controls.Add(this.button2);
+            this.ClientSize = new System.Drawing.Size(741, 384);
             this.Controls.Add(this.Actualizar);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.Password);
@@ -274,12 +222,11 @@
             this.Controls.Add(this.Loguearse);
             this.Controls.Add(this.Registrarse);
             this.Controls.Add(this.Desconectar);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.IP);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.btnConectar);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Click += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -288,9 +235,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox IP;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnConectar;
         private System.Windows.Forms.Button Desconectar;
         private System.Windows.Forms.Button Registrarse;
         private System.Windows.Forms.Button Loguearse;
@@ -306,9 +251,6 @@
         private System.Windows.Forms.Label Password;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button Actualizar;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBoxNum;
-        private System.Windows.Forms.Label label2;
     }
 }
 
