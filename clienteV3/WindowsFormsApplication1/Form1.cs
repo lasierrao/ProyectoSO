@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace WindowsFormsApplication1
 {
@@ -17,9 +18,12 @@ namespace WindowsFormsApplication1
         Socket server;
         IPAddress direc;
         IPEndPoint ipep;
+        Thread atender;
+
         public Form1()
         {
             InitializeComponent();
+            //CheckForIllegalCrossThreadCalls = false;
             direc = IPAddress.Parse("192.168.56.101");//IP.Text);
             ipep = new IPEndPoint(direc, 9051);
         }
@@ -34,7 +38,6 @@ namespace WindowsFormsApplication1
             Registrarse.Enabled = false;
             Loguearse.Enabled = false;
             Desconectar.Enabled = false;
-            Actualizar.Enabled = false;
         }
 
         private void bntConectar_Click(object sender, EventArgs e)
@@ -54,6 +57,11 @@ namespace WindowsFormsApplication1
                 MessageBox.Show("No he podido conectar con el servidor");
                 return;
             }
+
+            ThreadStart ts = delegate { AtenderServidor(); };
+            atender = new Thread(ts);
+            atender.Start();
+
             txtUsuario.Enabled = true;
             txtContraseña.Enabled = true;
             txtReContraseña.Enabled = true;
@@ -62,7 +70,6 @@ namespace WindowsFormsApplication1
             Registrarse.Enabled = true;
             Loguearse.Enabled = true;
             Desconectar.Enabled = true;
-            Actualizar.Enabled = true;
             btnConectar.Enabled = false;
         }
 
@@ -171,13 +178,9 @@ namespace WindowsFormsApplication1
             mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
             MessageBox.Show(mensaje);
         }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void Actualizar_Click(object sender, EventArgs e)
+        
+        delegate void mostrarLista(string[] lista);
+        public void ListaConectados(string[] mensaje)
         {
             tabla = new DataTable();
             //crear columna y fila
@@ -191,25 +194,14 @@ namespace WindowsFormsApplication1
             column.Unique = true;
             //añadir a la tabla
             this.tabla.Columns.Add(column);
-           
+
             //Limpiamos info de la tabla
             tabla.Rows.Clear();
-
-            //Asignamos el numero 19 pedir lista conectados
-            string mensaje = "19/";
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
             //Separamos los conectados
-            string[] ListaSeparada;
-            ListaSeparada = mensaje.Split('\0');
+            string[] ListaSeparada = mensaje;
             int i;
-            ListaSeparada = mensaje.Split('/');
-            ListaSeparada = mensaje.Split('/');
-            
+            //ListaSeparada = conectados.Split('/');
+
             //tabla.Columns.Clear();
             //Colocamos info en la tabla
             for (i = 0; i < ListaSeparada.Length; i++)
@@ -217,12 +209,34 @@ namespace WindowsFormsApplication1
                 row = tabla.NewRow();
                 row["Usuario"] = ListaSeparada[i];
                 tabla.Rows.Add(row);
-                ListaSeparada = mensaje.Split('/');
+                // ListaSeparada = conectados.Split('/');
             }
             //añadimos la tabla al grid
             dataGridView1.DataSource = tabla;
         }
+        public void AtenderServidor()
+        {
 
-        
+            string[] mensaje;
+            byte[] msg2 = new byte[80];
+            while (true)
+            {
+                //byte[] msg2 = new byte[80];
+                server.Receive(msg2);
+                mensaje = Encoding.ASCII.GetString(msg2).Split('/');
+                int opcion = Convert.ToInt32(mensaje[0]);
+                switch (opcion)
+                {
+                    case 19:
+                        mostrarLista delegado = new mostrarLista(ListaConectados);
+                        dataGridView1.Invoke(delegado, new object[] {mensaje});
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+        }
     }
 }
