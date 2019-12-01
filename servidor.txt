@@ -90,7 +90,26 @@ void UpdateConectados(Conectados *l){
 	for(i = 0; i < l->num; i++){
 		write(l->usuarios[i].socket,conectados,strlen(conectados));
 	}
-	printf("Informacion enviada a los otros usuarios");
+	printf("Informacion enviada a los otros usuarios\n");
+}
+int BuscarUsuarioConectado(Conectados *l,char usuario[],int *socket){//Puede dar error
+	for(int i = 0; i < l->num; i++){
+		if(strcmp(l->usuarios[i].nombre, usuario)==0){
+			socket = l->usuarios[i].socket;
+			return 0;
+		}
+	}
+	return 1;
+}
+void EnviarInvitacion(int socket){
+	char mensaje[200];
+	strcpy(mensaje,"18/SI");
+	write(socket,mensaje,strlen(mensaje));
+}
+void mostrarListaConectados(Conectados *l){
+	for(int i = 0; i < l->num; i++){
+		printf("%d -> %s\n",i,l->usuarios[i].nombre);
+	}
 }
 void *AtenderCliente(void *socket)
 {
@@ -185,6 +204,30 @@ void *AtenderCliente(void *socket)
 			write (sock_conn,respuesta, strlen(respuesta));
 			//close(sock_conn);
 			break;
+		case 13 :
+			//Invitar
+			printf("Entra?");
+			p = strtok(NULL, "/");
+			char UsuarioInv[20];
+			strcpy (UsuarioInv, p);
+			int sock_inv;
+			int resp = BuscarUsuarioConectado(&lista_conec,UsuarioInv,&sock_inv);
+			if (resp == 0)
+			{
+				printf ("SI\n");
+				strcpy (respuesta, "SI,");
+				EnviarInvitacion(sock_inv);
+			}
+			else
+			{
+				printf("NO\n");
+				strcpy (respuesta, "NO,");
+			}
+			printf ("%s\n", respuesta);
+			// Y lo enviamos
+			write (sock_conn,respuesta, strlen(respuesta));
+			//close(sock_conn);
+			break;
 		case 15://------------ampliacion-----------------
 			printf("Entra?");
 			p = strtok(NULL, "/");
@@ -196,6 +239,9 @@ void *AtenderCliente(void *socket)
 			break;
 		case 20: //El usuario se desconecta y actualizamos lista Conectados
 			QuitUserConect(Usuario1,sock_conn,&lista_conec);
+			mostrarListaConectados(&lista_conec);
+			UpdateConectados(&lista_conec);
+			
 			//UpdateConectados(&lista_conec);
 			terminar = -1;
 			printf ("Salimos del bucle\n");

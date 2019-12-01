@@ -38,6 +38,8 @@ namespace WindowsFormsApplication1
             Registrarse.Enabled = false;
             Loguearse.Enabled = false;
             Desconectar.Enabled = false;
+            box_invi.Enabled = false;
+            btn_Invitar.Enabled = false;
         }
 
         private void bntConectar_Click(object sender, EventArgs e)
@@ -86,12 +88,35 @@ namespace WindowsFormsApplication1
             //server.Receive(msg2);
             //mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
 
+            atender.Abort();
+            this.BackColor = Color.Gray;
+            server.Shutdown(SocketShutdown.Both);
+            server.Close();
+
+            txtUsuario.Enabled = false;
+            txtContraseña.Enabled = false;
+            txtReContraseña.Enabled = false;
+            txtUser.Enabled = false;
+            txtPassword.Enabled = false;
+            Registrarse.Enabled = false;
+            Loguearse.Enabled = false;
+            Desconectar.Enabled = false;
+            btnConectar.Enabled = true;
+        }
+        /*
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            string mensaje = "20/";
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+
+            atender.Abort();
             this.BackColor = Color.Gray;
             server.Shutdown(SocketShutdown.Both);
             server.Close();
 
         }
-
+        */
         private void Registrarse_Click(object sender, EventArgs e)
         {
             //Enviamos 2 strings con la condició que la contraseña sea la misma en los dos txt box
@@ -180,6 +205,10 @@ namespace WindowsFormsApplication1
         }
         
         delegate void mostrarLista(string[] lista);
+        delegate void Invitar();
+        public void InvitarPartida()
+        {
+        }
         public void ListaConectados(string[] mensaje)
         {
             tabla = new DataTable();
@@ -216,12 +245,12 @@ namespace WindowsFormsApplication1
         }
         public void AtenderServidor()
         {
-
             string[] mensaje;
-            byte[] msg2 = new byte[80];
+            //byte[] msg2 = new byte[80];
             while (true)
             {
                 //byte[] msg2 = new byte[80];
+                byte[] msg2 = new byte[80];
                 server.Receive(msg2);
                 mensaje = Encoding.ASCII.GetString(msg2).Split('/');
                 int opcion = Convert.ToInt32(mensaje[0]);
@@ -231,12 +260,47 @@ namespace WindowsFormsApplication1
                         mostrarLista delegado = new mostrarLista(ListaConectados);
                         dataGridView1.Invoke(delegado, new object[] {mensaje});
                         break;
+                    case 18:
+                        if (mensaje[1] == "SI")
+                        {
+                            MessageBox.Show("Te ha llegado una invitación");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Eres un pringao :v");
+                        }
+                        break;
                     default:
                         break;
                 }
-
+                mensaje = null;
             }
 
+        }
+
+        private void btn_Invitar_Click(object sender, EventArgs e)
+        {
+            string jugador = box_invi.Text; 
+            string mensaje = "13/" + jugador;
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+            //Recibimos la respuesta del servidor
+            byte[] msg2 = new byte[80];
+            server.Receive(msg2);
+            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
+
+            //Nos registramos con éxito
+            if (mensaje == "SI")
+            {
+                MessageBox.Show("Se ha enviado la invitación con ÉXITO!!!");
+                //Form2 mostrar = new Form2();
+                //mostrar.setServer(this.server);
+                //mostrar.Show();
+            }
+            else
+            {
+                MessageBox.Show("Usuario NO EXISTE.");
+            }
         }
     }
 }

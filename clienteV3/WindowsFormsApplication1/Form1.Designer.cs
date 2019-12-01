@@ -43,6 +43,8 @@
             this.User = new System.Windows.Forms.Label();
             this.Password = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.btn_Invitar = new System.Windows.Forms.Button();
+            this.box_invi = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -189,11 +191,30 @@
             this.dataGridView1.Size = new System.Drawing.Size(213, 202);
             this.dataGridView1.TabIndex = 20;
             // 
+            // btn_Invitar
+            // 
+            this.btn_Invitar.Location = new System.Drawing.Point(101, 298);
+            this.btn_Invitar.Name = "btn_Invitar";
+            this.btn_Invitar.Size = new System.Drawing.Size(75, 23);
+            this.btn_Invitar.TabIndex = 21;
+            this.btn_Invitar.Text = "Invitar";
+            this.btn_Invitar.UseVisualStyleBackColor = true;
+            this.btn_Invitar.Click += new System.EventHandler(this.btn_Invitar_Click);
+            // 
+            // box_invi
+            // 
+            this.box_invi.Location = new System.Drawing.Point(88, 272);
+            this.box_invi.Name = "box_invi";
+            this.box_invi.Size = new System.Drawing.Size(100, 20);
+            this.box_invi.TabIndex = 22;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(741, 384);
+            this.Controls.Add(this.box_invi);
+            this.Controls.Add(this.btn_Invitar);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.Password);
             this.Controls.Add(this.User);
@@ -235,6 +256,8 @@
         private System.Windows.Forms.Label User;
         private System.Windows.Forms.Label Password;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button btn_Invitar;
+        private System.Windows.Forms.TextBox box_invi;
     }
 }
 
