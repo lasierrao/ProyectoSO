@@ -11,6 +11,7 @@
 #include <pthread.h>
 #define NUM_THREADS	8
 #define MAX 100
+#define MAX_INVITADOS 5
 MYSQL *conn;
 int contador;
 
@@ -22,6 +23,10 @@ typedef struct{
 	Usuario usuarios[MAX];
 	int num;
 }Conectados;
+typedef struct{
+	Usuario usuarios[MAX_INVITADOS];
+	int num;
+}Invitados;
 
 Conectados lista_conec;//Se crea la lista de conectados
 //pthread_mutex_t mutex = //declarar mutex//Se usa cuando todos usan una variable en comun 
@@ -79,7 +84,7 @@ int QuitUserConect(char usuario[20], int socket, Conectados *l)
 void UpdateConectados(Conectados *l){
 	int i = 0;
 	char conectados[200];
-	strcpy(conectados,"19/");
+	strcpy(conectados,"4/");
 	for(i = 0; i < l->num; i++){
 		strcat(conectados, l->usuarios[i].nombre);
 		strcat(conectados,"/");
@@ -92,24 +97,38 @@ void UpdateConectados(Conectados *l){
 	}
 	printf("Informacion enviada a los otros usuarios\n");
 }
-int BuscarUsuarioConectado(Conectados *l,char usuario[],int *socket){//Puede dar error
+int BuscarUsuarioConectado(Conectados *l,char usuario[],char socket[]){//Puede dar error
 	for(int i = 0; i < l->num; i++){
 		if(strcmp(l->usuarios[i].nombre, usuario)==0){
-			socket = l->usuarios[i].socket;
+			//socket = l->usuarios[i].socket;
+			sprintf(socket,"%d",l->usuarios[i].socket);
 			return 0;
 		}
 	}
 	return 1;
 }
-void EnviarInvitacion(int socket){
+int BuscarNombreUsuario(Conectados *l,char socket[],char name[]){//Puede dar error
+	for(int i = 0; i < l->num; i++){
+		if(strcmp(l->usuarios[i].socket, socket)==0){
+			//socket = l->usuarios[i].socket;
+			sprintf(name,"%d",l->usuarios[i].nombre);
+			return 0;
+		}
+	}
+	return 1;
+}
+void EnviarInvitacion(int socket, char usuario[20]){
 	char mensaje[200];
-	strcpy(mensaje,"18/SI");
+	sprintf(mensaje,"6/SI/%s",usuario);
+	//strcpy(mensaje,"6/SI");
 	write(socket,mensaje,strlen(mensaje));
 }
 void mostrarListaConectados(Conectados *l){
 	for(int i = 0; i < l->num; i++){
-		printf("%d -> %s\n",i,l->usuarios[i].nombre);
+		printf("%d -> usuario: %s | socket: %d\n",i,l->usuarios[i].nombre,l->usuarios[i].socket);
 	}
+}
+void GuardarUsuarioInvitado(){
 }
 void *AtenderCliente(void *socket)
 {
@@ -124,6 +143,9 @@ void *AtenderCliente(void *socket)
 	char peticion[512];
 	char respuesta[512];
 	int ret;
+
+	Invitados lista_invi;
+	bool nueva_partida = false;
 	
 	int terminar = 0;
 	//El cliente podr￯﾿ﾯ￯ﾾ﾿￯ﾾﾡ hacer muchas peticiones
@@ -159,18 +181,17 @@ void *AtenderCliente(void *socket)
 			if (Registrarse(Usuario,Contra) == 1)
 			{
 				printf ("SI\n");
-				strcpy (respuesta, "SI,");
+				strcpy (respuesta, "2/SI");
 			}
 			else
 			{
 				printf("NO\n");
-				strcpy (respuesta, "NO,");
+				strcpy (respuesta, "2/NO");
 			}
 			
 			printf ("%s\n", respuesta);
 			// Y lo enviamos
 			write (sock_conn,respuesta, strlen(respuesta));
-			//close(sock_conn);
 			break;
 			
 		case 12 :
@@ -183,50 +204,95 @@ void *AtenderCliente(void *socket)
 			p = strtok(NULL, "/");
 			char Contra1 [20];
 			strcpy (Contra1, p);
-			//printf ("%s %s\n",Usuario1,Contra1);
-			//valorLoguearse = Loguearse(Usuario1,Contra1);
-			//printf("LA funcion retorna %d\n", valorLoguearse);
 			if (Loguearse(Usuario1,Contra1) == 1)
 			{
 				printf ("SI\n");
-				strcpy (respuesta, "SI,");
+				strcpy (respuesta, "3/SI");
 				AddUserConect(Usuario1,sock_conn,&lista_conec);
 				UpdateConectados(&lista_conec);
-				//UpdateConectados(&lista_conec);
 			}
 			else
 			{
 				printf("NO\n");
-				strcpy (respuesta, "NO,");
+				strcpy (respuesta, "3/NO");
+			}
+			printf ("%s\n", respuesta);
+			/*char sock[20];
+			strcpy(sock,sock_conn);
+			printf("Mi socket: %s\n",sock);*/
+			// Y lo enviamos
+			write (sock_conn,respuesta, strlen(respuesta));
+			mostrarListaConectados(&lista_conec);
+			break;
+		case 13 :
+			//Invitar
+			if(nueva_partida == false){
+				nueva_partida = true;
+			}
+			mostrarListaConectados(&lista_conec);
+			printf("Entra?");
+			p = strtok(NULL, "/");
+			char UsuarioInv[20];
+			char my_name[20];
+			strcpy (UsuarioInv, p);
+			char my_socket[20];
+			char other_socket[10];
+			int resp = BuscarUsuarioConectado(&lista_conec,UsuarioInv,other_socket);
+			if (resp == 0)
+			{
+				printf ("SI\n");
+				strcpy (respuesta, "5/SI");
+				//sprintf(y,"%s",sock_invi);
+				//strcpy(y,sock_conn);
+				printf("Socket de la persona a invitar: %s\n",other_socket);
+				if(BuscarNombreUsuario(&lista_conec,my_socket,my_name) == 0){
+				EnviarInvitacion(atoi(other_socket), my_name);
+}
+			}
+			else
+			{
+				printf("NO\n");
+				strcpy (respuesta, "5/NO");
 			}
 			printf ("%s\n", respuesta);
 			// Y lo enviamos
 			write (sock_conn,respuesta, strlen(respuesta));
 			//close(sock_conn);
 			break;
-		case 13 :
-			//Invitar
+		case 14://Respuesta de Invitar
+			if(nueva_partida == true){
+				mostrarListaConectados(&lista_conec);
 			printf("Entra?");
 			p = strtok(NULL, "/");
-			char UsuarioInv[20];
+			char Usuario[20];
+			char my_name[20];
 			strcpy (UsuarioInv, p);
-			int sock_inv;
-			int resp = BuscarUsuarioConectado(&lista_conec,UsuarioInv,&sock_inv);
+			char my_socket[20];
+			char other_socket[10];
+			int resp = BuscarUsuarioConectado(&lista_conec,UsuarioInv,other_socket);
 			if (resp == 0)
 			{
 				printf ("SI\n");
-				strcpy (respuesta, "SI,");
-				EnviarInvitacion(sock_inv);
+				strcpy (respuesta, "5/SI");
+				//sprintf(y,"%s",sock_invi);
+				//strcpy(y,sock_conn);
+				printf("Socket de la persona a invitar: %s\n",other_socket);
+				if(BuscarNombreUsuario(&lista_conec,my_socket,my_name) == 0){
+				EnviarInvitacion(atoi(other_socket), my_name);
+}
 			}
 			else
 			{
 				printf("NO\n");
-				strcpy (respuesta, "NO,");
+				strcpy (respuesta, "5/NO");
 			}
 			printf ("%s\n", respuesta);
 			// Y lo enviamos
 			write (sock_conn,respuesta, strlen(respuesta));
 			//close(sock_conn);
+			}
+			
+			
 			break;
 		case 15://------------ampliacion-----------------
 			printf("Entra?");
@@ -270,7 +336,7 @@ void InicializarBD()
 		exit (1);
 	}
 	//inicializar la conexin
-	conn = mysql_real_connect (conn, "localhost","root", "mysql", "Juego",0, NULL, 0);
+	conn = mysql_real_connect (conn, "localhost","root", "mysql", "M3_Juego",0, NULL, 0);
 	if (conn==NULL) {
 		printf ("Error al inicializar la conexion: %u %s\n", 
 				mysql_errno(conn), mysql_error(conn));
@@ -309,9 +375,9 @@ int Registrarse(char Usuario[20], char Contra[20])
 	//Cumplimos la condicion para registrarnos
 	if (row == NULL)
 	{
-		printf("Jugador no encontrado, lo a￱adimos!\n");
-		strcpy (insertar,"INSERT INTO Jugador (Nombre, Password) VALUES (");
-		sprintf (insertar,"%s'%s','%s');",insertar,Usuario,Contra);
+		printf("Jugador no encontrado, lo añadimos!\n");
+		strcpy (insertar,"INSERT INTO Jugador (Nombre, Password) VALUES ");
+		sprintf (insertar,"%s ('%s','%s');",insertar,Usuario,Contra);
 		
 		err=mysql_query (conn, insertar);
 		if (err!=0) 
@@ -320,11 +386,11 @@ int Registrarse(char Usuario[20], char Contra[20])
 					mysql_errno(conn), mysql_error(conn));
 			exit (1);
 		}
-		printf("Jugador a￱adido con exito!!!!!\n");
+		printf("Jugador añadido con exito!!!!!\n");
 		return 1;
 	}
 	
-	//Si tenemos el Uuario a registar en la BD:
+	//Si tenemos el Usuario a registar en la BD:
 	//No podemos registrarnos con ese Nombre
 	else
 	{
@@ -334,19 +400,17 @@ int Registrarse(char Usuario[20], char Contra[20])
 
 int Loguearse(char Usuario1[20], char Contra1[20])
 {
-	//Tenemos que recibir un Usuario y contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa, buscarlo en la BD
+	//Tenemos que recibir un Usuario y contraseña, buscarlo en la BD
 	//Si el usuario esta registrado retornamos un 1 y damos paermiso 
 	//para que haga su consulta.
-	//char Usuario[20];
-	//char Contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa[20];
 	int sock_conn, sock_listen, ret;
 	MYSQL_RES *resultado;
 	MYSQL_ROW row;
-	//MYSQL *conn;
 	int err;
 	int id;
 	char consulta[200];
-	//Nos genera una tabla con el nombre y la contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa que hemos recibido como parametros
+	
+	//Nos genera una tabla con el nombre y la contraseña que hemos recibido como parametros
 	strcpy (consulta,"SELECT Jugador.Nombre, Jugador.Password, Jugador.Identificador FROM Jugador WHERE Jugador.Nombre =");
 	sprintf (consulta, "%s'%s'",consulta,Usuario1);
 	strcat (consulta," AND Jugador.Password =");
@@ -365,25 +429,21 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 	row = mysql_fetch_row (resultado);
 	printf("Almaceno resultado consulta en row\n");
 	
-	//Al meter un usuario correcto pero una contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa erronea
-	//La fila es NULL ya que no existira jugador con ese nombre y contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa
+	//Al meter un usuario correcto pero una contraseña erronea
+	//La fila es NULL ya que no existira jugador con ese nombre y contraseña
 	if (row == NULL)
 	{
 		printf ("No se han obtenido datos en la consulta\n");
 		return 0;
 	}
 	
-	//Retornamos un 1, usuario logeado con ￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾩxito
+	//Retornamos un 1, usuario logeado con exito
 	//En un futuro podemos hacer que retorne el usuario (mas info)
 	else
 	{
 		printf ("Se han obtenido datos en la consulta\n");
 		return 1;
 	}
-	
-	
-	//mysql_close (conn);
-	//exit(0); //Exit de donde???????
 }
 /*int mostrarlista(char nombres[200]){
 <<<<<<< HEAD:servidor.txt
@@ -541,7 +601,7 @@ int main(int argc, char *argv[])
 		printf ("Escuchando\n");
 		
 		sock_conn = accept(sock_listen, NULL, NULL);
-		printf ("He recibido conexi?n\n");
+		printf ("He recibido conexion\n");
 		
 		sockets[i] =sock_conn;
 		//sock_conn es el socket que usaremos para este cliente

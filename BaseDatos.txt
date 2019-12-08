@@ -1,12 +1,11 @@
-DROP DATABASE IF EXISTS Juego;
-CREATE DATABASE Juego;
+DROP DATABASE IF EXISTS M3_Juego;
+CREATE DATABASE M3_Juego;
 USE Juego;
 
 CREATE TABLE Jugador (
   Identificador INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
   Nombre TEXT NOT NULL,
-  Password TEXT NOT NULL,
-  Conectado BOOLEAN NOT NULL
+  Password TEXT NOT NULL
 )ENGINE = InnoDB;
 
 CREATE TABLE Partida (
@@ -23,11 +22,11 @@ CREATE TABLE JugadorPartida (
  FOREIGN KEY (Partida) REFERENCES Partida(Identificador)
  )ENGINE = InnoDB;
 
-INSERT INTO Jugador VALUES(1,'Juan','1A',false);
-INSERT INTO Jugador VALUES(2,'Maria','Maria123',false);
-INSERT INTO Jugador VALUES(3,'Pedro','hola1',false);
-INSERT INTO Jugador VALUES(4,'Luis','123',false);
-INSERT INTO Jugador VALUES(5,'Julia','123',false);
+INSERT INTO Jugador VALUES(1,'Juan','1A');
+INSERT INTO Jugador VALUES(2,'Maria','Maria123');
+INSERT INTO Jugador VALUES(3,'Pedro','hola1');
+INSERT INTO Jugador VALUES(4,'Luis','123');
+INSERT INTO Jugador VALUES(5,'Julia','123');
 
 INSERT INTO Partida VALUES(1,'01/10/2019-11:55',230,'Maria');
 INSERT INTO Partida VALUES(2,'01/10/2019-13:55',280,'Maria');

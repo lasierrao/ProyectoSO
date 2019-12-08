@@ -45,12 +45,13 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.btn_Invitar = new System.Windows.Forms.Button();
             this.box_invi = new System.Windows.Forms.TextBox();
+            this.label_mensajes = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnConectar
             // 
-            this.btnConectar.Location = new System.Drawing.Point(319, 294);
+            this.btnConectar.Location = new System.Drawing.Point(180, 373);
             this.btnConectar.Name = "btnConectar";
             this.btnConectar.Size = new System.Drawing.Size(135, 40);
             this.btnConectar.TabIndex = 4;
@@ -60,14 +61,14 @@
             // 
             // Desconectar
             // 
-            this.Desconectar.Location = new System.Drawing.Point(517, 294);
+            this.Desconectar.Location = new System.Drawing.Point(389, 373);
             this.Desconectar.Margin = new System.Windows.Forms.Padding(2);
             this.Desconectar.Name = "Desconectar";
             this.Desconectar.Size = new System.Drawing.Size(132, 40);
             this.Desconectar.TabIndex = 7;
             this.Desconectar.Text = "Desconectar";
             this.Desconectar.UseVisualStyleBackColor = true;
-            this.Desconectar.Click += new System.EventHandler(this.button3_Click);
+            this.Desconectar.Click += new System.EventHandler(this.btnDesconectar_Click);
             // 
             // Registrarse
             // 
@@ -208,11 +209,21 @@
             this.box_invi.Size = new System.Drawing.Size(100, 20);
             this.box_invi.TabIndex = 22;
             // 
+            // label_mensajes
+            // 
+            this.label_mensajes.AutoSize = true;
+            this.label_mensajes.Location = new System.Drawing.Point(306, 279);
+            this.label_mensajes.Name = "label_mensajes";
+            this.label_mensajes.Size = new System.Drawing.Size(55, 13);
+            this.label_mensajes.TabIndex = 23;
+            this.label_mensajes.Text = "Mensajes:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(741, 384);
+            this.ClientSize = new System.Drawing.Size(741, 448);
+            this.Controls.Add(this.label_mensajes);
             this.Controls.Add(this.box_invi);
             this.Controls.Add(this.btn_Invitar);
             this.Controls.Add(this.dataGridView1);
@@ -258,6 +269,7 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button btn_Invitar;
         private System.Windows.Forms.TextBox box_invi;
+        private System.Windows.Forms.Label label_mensajes;
     }
 }
 

@@ -19,6 +19,8 @@ namespace WindowsFormsApplication1
         IPAddress direc;
         IPEndPoint ipep;
         Thread atender;
+        byte[] msg2;
+        bool res_partida;
 
         public Form1()
         {
@@ -44,8 +46,8 @@ namespace WindowsFormsApplication1
 
         private void bntConectar_Click(object sender, EventArgs e)
         {
-            //Creamos el socket 
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            //Creamos el socket 
             try
             {
                 server.Connect(ipep);//Intentamos conectar el socket
@@ -73,20 +75,17 @@ namespace WindowsFormsApplication1
             Loguearse.Enabled = true;
             Desconectar.Enabled = true;
             btnConectar.Enabled = false;
+            box_invi.Enabled = true;
+            btn_Invitar.Enabled = true;
         }
 
         
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnDesconectar_Click(object sender, EventArgs e)
         {
             string mensaje = "20/";
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
-
-            //No necesitamos recibir respuesta
-            //byte[] msg2 = new byte[80];
-            //server.Receive(msg2);
-            //mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
 
             atender.Abort();
             this.BackColor = Color.Gray;
@@ -103,20 +102,6 @@ namespace WindowsFormsApplication1
             Desconectar.Enabled = false;
             btnConectar.Enabled = true;
         }
-        /*
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            string mensaje = "20/";
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
-
-            atender.Abort();
-            this.BackColor = Color.Gray;
-            server.Shutdown(SocketShutdown.Both);
-            server.Close();
-
-        }
-        */
         private void Registrarse_Click(object sender, EventArgs e)
         {
             //Enviamos 2 strings con la condició que la contraseña sea la misma en los dos txt box
@@ -128,7 +113,6 @@ namespace WindowsFormsApplication1
             {
                 MessageBox.Show("La contraseña no coincide...");
             }
-
             else
             {
                 //Asignamos el numero 11 para registrarnos
@@ -136,17 +120,6 @@ namespace WindowsFormsApplication1
                 MessageBox.Show(mensaje);
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
-                //Recibimos la respuesta del servidor
-                byte[] msg2 = new byte[80];
-                server.Receive(msg2);
-                mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-
-                //Nos registramos con éxito
-                if (mensaje == "SI")
-                    MessageBox.Show("Te has registrado con ÉXITO!!!");
-                else
-                    MessageBox.Show("ERROR AL REGISTRARSE, Usuario ya eixistente.");
             }
 
         }
@@ -161,53 +134,43 @@ namespace WindowsFormsApplication1
             string mensaje = "12/" + Usuario + "/" + Contraseña;
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
-
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-
-            //Nos registramos con éxito
-            if (mensaje == "SI")
-            {
-                MessageBox.Show("Te has logeado con ÉXITO!!!");
-                //Form2 mostrar = new Form2();
-                //mostrar.setServer(this.server);
-                //mostrar.Show();
-            }
-            else
-            {
-                MessageBox.Show("ERROR AL LOGUEARSE, Usuario NO EXISTE.");
-            }
-        }
-
-        private void nombre_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtPassword_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btn_mostrar_Click(object sender, EventArgs e)
-        {
-            string mensaje = "13/entrar";
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
-
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-            MessageBox.Show(mensaje);
         }
         
         delegate void mostrarLista(string[] lista);
         delegate void Invitar();
+        delegate void desactivarBtn();
+        delegate void desactivarBtn2();
+        delegate void inviPrueba();
+        public void crearForm()
+        {
+            Form2 n = new Form2();
+            n.ShowDialog();
+            bool res = n.getRespuesta();
+            if (res == true)
+            {
+                MessageBox.Show("Has aceptado");
+                string mensaje = "14/";
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+            }
+            else
+            {
+                MessageBox.Show("Has rechazado");
+            }
+            res = this.res_partida;
+        }
         public void InvitarPartida()
         {
+            label_mensajes.Text = "Mensaje: Te ha llegado una invitación";
+                //MessageBox.Show("Te ha llegado una invitación");
+                /*if (res == true)
+                {
+                    label_mensajes.Text = "Mensaje: Has aceptado la partida";
+                }
+                else
+                {
+                    label_mensajes.Text = "Mensaje: Has rechazado la partida";
+                }*/
         }
         public void ListaConectados(string[] mensaje)
         {
@@ -229,16 +192,12 @@ namespace WindowsFormsApplication1
             //Separamos los conectados
             string[] ListaSeparada = mensaje;
             int i;
-            //ListaSeparada = conectados.Split('/');
-
-            //tabla.Columns.Clear();
             //Colocamos info en la tabla
             for (i = 0; i < ListaSeparada.Length; i++)
             {
                 row = tabla.NewRow();
                 row["Usuario"] = ListaSeparada[i];
                 tabla.Rows.Add(row);
-                // ListaSeparada = conectados.Split('/');
             }
             //añadimos la tabla al grid
             dataGridView1.DataSource = tabla;
@@ -246,36 +205,64 @@ namespace WindowsFormsApplication1
         public void AtenderServidor()
         {
             string[] mensaje;
-            //byte[] msg2 = new byte[80];
             while (true)
             {
-                //byte[] msg2 = new byte[80];
                 byte[] msg2 = new byte[80];
                 server.Receive(msg2);
-                mensaje = Encoding.ASCII.GetString(msg2).Split('/');
+                mensaje = Encoding.ASCII.GetString(msg2).TrimEnd('\0').Split('/');
+
                 int opcion = Convert.ToInt32(mensaje[0]);
                 switch (opcion)
                 {
-                    case 19:
-                        mostrarLista delegado = new mostrarLista(ListaConectados);
-                        dataGridView1.Invoke(delegado, new object[] {mensaje});
+                    case 2:
+                        //Nos registramos con éxito
+                        if (mensaje[1] == "SI")
+                            MessageBox.Show("Te has registrado con ÉXITO!!!");
+                        else
+                            MessageBox.Show("ERROR AL REGISTRARSE, Usuario ya existente.");
                         break;
-                    case 18:
+                    case 3:
+                        //Nos logeamos con éxito
                         if (mensaje[1] == "SI")
                         {
-                            MessageBox.Show("Te ha llegado una invitación");
+                            MessageBox.Show("Te has logeado con ÉXITO!!!");
+                            //Form2 mostrar = new Form2();
+                            //mostrar.setServer(this.server);
+                            //mostrar.Show();
                         }
                         else
                         {
-                            MessageBox.Show("Eres un pringao :v");
+                            MessageBox.Show("ERROR AL LOGUEARSE, Usuario NO EXISTE.");
                         }
+                        break;
+                    case 4:
+                        mostrarLista delegado = new mostrarLista(ListaConectados);
+                        dataGridView1.Invoke(delegado, new object[] { mensaje });
+                        break;
+                    case 5:
+                        //Confirmación del envio
+                        if (mensaje[1] == "SI")
+                        {
+                            MessageBox.Show("Se ha enviado la invitación con ÉXITO!!!");
+                            //Form2 mostrar = new Form2();
+                            //mostrar.setServer(this.server);
+                            //mostrar.Show();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Usuario NO EXISTE.");
+                        }
+                        break;
+                    case 6:
+                        ThreadStart n = delegate { crearForm(); };
+                        Thread t = new Thread(n);
+                        t.Start();
                         break;
                     default:
                         break;
                 }
                 mensaje = null;
             }
-
         }
 
         private void btn_Invitar_Click(object sender, EventArgs e)
@@ -284,23 +271,7 @@ namespace WindowsFormsApplication1
             string mensaje = "13/" + jugador;
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-
-            //Nos registramos con éxito
-            if (mensaje == "SI")
-            {
-                MessageBox.Show("Se ha enviado la invitación con ÉXITO!!!");
-                //Form2 mostrar = new Form2();
-                //mostrar.setServer(this.server);
-                //mostrar.Show();
-            }
-            else
-            {
-                MessageBox.Show("Usuario NO EXISTE.");
-            }
         }
+
     }
 }

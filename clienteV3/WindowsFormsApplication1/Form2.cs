@@ -13,49 +13,32 @@ namespace WindowsFormsApplication1
 {
     public partial class Form2 : Form
     {
-        Socket server;
+        bool respuesta;
+        string jugador;
         public Form2()
         {
             InitializeComponent();
-            //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
-            //al que deseamos conectarnos
-            IPAddress direc = IPAddress.Parse("192.168.56.101");
-            IPEndPoint ipep = new IPEndPoint(direc, 9050);
-
-
-            //Creamos el socket 
-            server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            try
-            {
-                server.Connect(ipep);//Intentamos conectar el socket
-                this.BackColor = Color.Green;
-                MessageBox.Show("Conectado");
-
-            }
-            catch (SocketException ex)
-            {
-                //Si hay excepcion imprimimos error y salimos del programa con return 
-                MessageBox.Show("No he podido conectar con el servidor");
-                return;
-            }
-
-        }
-        public void setServer(Socket serv)
-        {
-            //this.server = serv;
+            label_mensaje.Text = "Te han invitado a que te unas a una partida.";
         }
 
-        private void btn_mos_jug_Click(object sender, EventArgs e)
+        private void btnAceptar_Click(object sender, EventArgs e)
         {
-            string mensaje = "13/entrar";
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
+            respuesta = true;
+            Close();
+        }
 
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split(',')[0];
-            MessageBox.Show(mensaje);
+        private void btnRechazar_Click(object sender, EventArgs e)
+        {
+            respuesta = false;
+            Close();
+        }
+        public void setNombre(string jugador)
+        {
+            this.jugador = jugador;
+        }
+        public bool getRespuesta()
+        {
+            return this.respuesta;
         }
     }
 }
