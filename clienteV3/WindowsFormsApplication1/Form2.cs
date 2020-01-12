@@ -15,12 +15,15 @@ namespace WindowsFormsApplication1
     {
         bool respuesta;
         string jugador;
+        string nom_invitacion;
         public Form2()
         {
             InitializeComponent();
-            label_mensaje.Text = "Te han invitado a que te unas a una partida.";
         }
-
+        private void Form2_Load(object sender, EventArgs e)
+        {
+            label_mensaje.Text = nom_invitacion + " te ha invitado a que te unas a una partida.";
+        }
         private void btnAceptar_Click(object sender, EventArgs e)
         {
             respuesta = true;
@@ -39,6 +42,10 @@ namespace WindowsFormsApplication1
         public bool getRespuesta()
         {
             return this.respuesta;
+        }
+        public void setNomInvitacion(string nombre)
+        {
+            this.nom_invitacion = nombre;
         }
     }
 }

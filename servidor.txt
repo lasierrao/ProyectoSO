@@ -11,7 +11,11 @@
 #include <pthread.h>
 #define NUM_THREADS	8
 #define MAX 100
-#define MAX_INVITADOS 5
+#define MAX_INVI 5
+
+int partida_activa = 0;
+char creador_partida[20];
+
 MYSQL *conn;
 int contador;
 
@@ -20,329 +24,22 @@ typedef struct{
 	int socket;
 }Usuario;
 typedef struct{
+	char nombre[20];
+	int notificacion;
+	int socket;
+}UsuarioInvi;
+typedef struct{
 	Usuario usuarios[MAX];
 	int num;
-}Conectados;
+}Lista;
 typedef struct{
-	Usuario usuarios[MAX_INVITADOS];
+	UsuarioInvi usuarios[MAX];
 	int num;
-}Invitados;
+}ListaInvi;
 
-Conectados lista_conec;//Se crea la lista de conectados
-//pthread_mutex_t mutex = //declarar mutex//Se usa cuando todos usan una variable en comun 
-//---------------------Ampliaciￃﾳn-------------------------
-int RecogerSocket(Conectados *l,char numero[1]){
-	int respuesta;
-	if(numero[0] == '0'){
-		respuesta = l->usuarios[0].socket;
-	}else if(numero[0] == '1'){
-		respuesta = l->usuarios[l->num - 1].socket;
-	}else{
-		respuesta = -1;
-	}
-	printf("Numero del socket:%d\n",respuesta);
-	return respuesta;
-}
-//------------------------------------------------------------
-int AddUserConect(char usuario[20], int socket, Conectados *l){
-	strcpy(l->usuarios[l->num].nombre,usuario);
-	l->usuarios[l->num].socket = socket;//Se guarda el socket para luego poder invitar a un usuario a jugar
-	l->num++;
-}
-
-int QuitUserConect(char usuario[20], int socket, Conectados *l)
-{
-	//Buscamos usuario al que queremos eliminar en el vector "Conectados"
-	int i;
-	bool encontrado = false;
-	
-	
-	for (i=0;i<l->num;i++)
-	{
-		if (strcmp(l->usuarios[i].nombre,usuario) == 0)
-		{
-			encontrado = true;
-			int j = i;
-			for (j;j < (l->num-1);j++)
-			{
-				strcpy(l->usuarios[j].nombre,l->usuarios[j+1].nombre);
-				l->usuarios[j].socket=l->usuarios[j+1].socket;
-			}
-		}
-		
-		
-	}
-	if (encontrado){
-		printf("QuitUserConect encontrado, user: %s\n", usuario);
-		l->num--;
-	}else{
-		printf("QuitUserConect NO encontrado, user: %s\n", usuario);
-	}
-	
-}
-
-void UpdateConectados(Conectados *l){
-	int i = 0;
-	char conectados[200];
-	strcpy(conectados,"4/");
-	for(i = 0; i < l->num; i++){
-		strcat(conectados, l->usuarios[i].nombre);
-		strcat(conectados,"/");
-	}
-	printf("Respuesta: %s\n", conectados);
-	printf("Lista de los usuarios conectados: %s\n",conectados);
-	//Para informar a todos los demas usuarios
-	for(i = 0; i < l->num; i++){
-		write(l->usuarios[i].socket,conectados,strlen(conectados));
-	}
-	printf("Informacion enviada a los otros usuarios\n");
-}
-int BuscarUsuarioConectado(Conectados *l,char usuario[],char socket[]){//Puede dar error
-	for(int i = 0; i < l->num; i++){
-		if(strcmp(l->usuarios[i].nombre, usuario)==0){
-			//socket = l->usuarios[i].socket;
-			sprintf(socket,"%d",l->usuarios[i].socket);
-			return 0;
-		}
-	}
-	return 1;
-}
-int BuscarNombreUsuario(Conectados *l,char socket[],char name[]){//Puede dar error
-	for(int i = 0; i < l->num; i++){
-		if(strcmp(l->usuarios[i].socket, socket)==0){
-			//socket = l->usuarios[i].socket;
-			sprintf(name,"%d",l->usuarios[i].nombre);
-			return 0;
-		}
-	}
-	return 1;
-}
-void EnviarInvitacion(int socket, char usuario[20]){
-	char mensaje[200];
-	sprintf(mensaje,"6/SI/%s",usuario);
-	//strcpy(mensaje,"6/SI");
-	write(socket,mensaje,strlen(mensaje));
-}
-void mostrarListaConectados(Conectados *l){
-	for(int i = 0; i < l->num; i++){
-		printf("%d -> usuario: %s | socket: %d\n",i,l->usuarios[i].nombre,l->usuarios[i].socket);
-	}
-}
-void GuardarUsuarioInvitado(){
-}
-void *AtenderCliente(void *socket)
-{
-	int res;
-	char usuarios[200];
-	char *rows;
-	int sock_conn;
-	int *s;
-	s = (int *) socket;
-	sock_conn= *s;
-	
-	char peticion[512];
-	char respuesta[512];
-	int ret;
-
-	Invitados lista_invi;
-	bool nueva_partida = false;
-	
-	int terminar = 0;
-	//El cliente podr￯﾿ﾯ￯ﾾ﾿￯ﾾﾡ hacer muchas peticiones
-	//mientras terminar sea igual a 0
-	while(terminar ==0){
-		ret=read(sock_conn,peticion, sizeof(peticion));
-		printf ("Recibido\n");
-		
-		// Tenemos que a?adirle la marca de fin de string 
-		// para que no escriba lo que hay despues en el buffer
-		peticion[ret]='\0';
-		
-		//Escribimos el nombre en la consola
-		
-		printf ("Se ha conectado: %s\n",peticion);
-		
-		//-----------Crear una funcion para usar theader aqui?
-		char *p = strtok( peticion, "/");
-		int codigo =  atoi (p);
-		printf ("case: %d\n",codigo);
-		
-		switch(codigo)
-		{
-			//REGISTRARSE
-		case 11 :
-			p = strtok(NULL, "/");
-			char Usuario[20];
-			strcpy (Usuario, p);
-			p = strtok(NULL, "/");
-			char Contra [20];
-			strcpy (Contra, p);
-			printf ("%s %s\n",Usuario,Contra);
-			if (Registrarse(Usuario,Contra) == 1)
-			{
-				printf ("SI\n");
-				strcpy (respuesta, "2/SI");
-			}
-			else
-			{
-				printf("NO\n");
-				strcpy (respuesta, "2/NO");
-			}
-			
-			printf ("%s\n", respuesta);
-			// Y lo enviamos
-			write (sock_conn,respuesta, strlen(respuesta));
-			break;
-			
-		case 12 :
-			//LOGUEARSE
-			//case 12 :
-			printf("Entra?");
-			p = strtok(NULL, "/");
-			char Usuario1[20];
-			strcpy (Usuario1, p);
-			p = strtok(NULL, "/");
-			char Contra1 [20];
-			strcpy (Contra1, p);
-			if (Loguearse(Usuario1,Contra1) == 1)
-			{
-				printf ("SI\n");
-				strcpy (respuesta, "3/SI");
-				AddUserConect(Usuario1,sock_conn,&lista_conec);
-				UpdateConectados(&lista_conec);
-			}
-			else
-			{
-				printf("NO\n");
-				strcpy (respuesta, "3/NO");
-			}
-			printf ("%s\n", respuesta);
-			/*char sock[20];
-			strcpy(sock,sock_conn);
-			printf("Mi socket: %s\n",sock);*/
-			// Y lo enviamos
-			write (sock_conn,respuesta, strlen(respuesta));
-			mostrarListaConectados(&lista_conec);
-			break;
-		case 13 :
-			//Invitar
-			if(nueva_partida == false){
-				nueva_partida = true;
-			}
-			mostrarListaConectados(&lista_conec);
-			printf("Entra?");
-			p = strtok(NULL, "/");
-			char UsuarioInv[20];
-			char my_name[20];
-			strcpy (UsuarioInv, p);
-			char my_socket[20];
-			char other_socket[10];
-			int resp = BuscarUsuarioConectado(&lista_conec,UsuarioInv,other_socket);
-			if (resp == 0)
-			{
-				printf ("SI\n");
-				strcpy (respuesta, "5/SI");
-				//sprintf(y,"%s",sock_invi);
-				//strcpy(y,sock_conn);
-				printf("Socket de la persona a invitar: %s\n",other_socket);
-				if(BuscarNombreUsuario(&lista_conec,my_socket,my_name) == 0){
-				EnviarInvitacion(atoi(other_socket), my_name);
-}
-			}
-			else
-			{
-				printf("NO\n");
-				strcpy (respuesta, "5/NO");
-			}
-			printf ("%s\n", respuesta);
-			// Y lo enviamos
-			write (sock_conn,respuesta, strlen(respuesta));
-			//close(sock_conn);
-			break;
-		case 14://Respuesta de Invitar
-			if(nueva_partida == true){
-				mostrarListaConectados(&lista_conec);
-			printf("Entra?");
-			p = strtok(NULL, "/");
-			char Usuario[20];
-			char my_name[20];
-			strcpy (UsuarioInv, p);
-			char my_socket[20];
-			char other_socket[10];
-			int resp = BuscarUsuarioConectado(&lista_conec,UsuarioInv,other_socket);
-			if (resp == 0)
-			{
-				printf ("SI\n");
-				strcpy (respuesta, "5/SI");
-				//sprintf(y,"%s",sock_invi);
-				//strcpy(y,sock_conn);
-				printf("Socket de la persona a invitar: %s\n",other_socket);
-				if(BuscarNombreUsuario(&lista_conec,my_socket,my_name) == 0){
-				EnviarInvitacion(atoi(other_socket), my_name);
-}
-			}
-			else
-			{
-				printf("NO\n");
-				strcpy (respuesta, "5/NO");
-			}
-			printf ("%s\n", respuesta);
-			// Y lo enviamos
-			write (sock_conn,respuesta, strlen(respuesta));
-			//close(sock_conn);
-			}
-			
-			
-			break;
-		case 15://------------ampliacion-----------------
-			printf("Entra?");
-			p = strtok(NULL, "/");
-			char num[1];
-			strcpy (num, p);
-			int res = RecogerSocket(&lista_conec,num);
-			sprintf(respuesta,"%d",res);
-			write(sock_conn,respuesta, strlen(respuesta));
-			break;
-		case 20: //El usuario se desconecta y actualizamos lista Conectados
-			QuitUserConect(Usuario1,sock_conn,&lista_conec);
-			mostrarListaConectados(&lista_conec);
-			UpdateConectados(&lista_conec);
-			
-			//UpdateConectados(&lista_conec);
-			terminar = -1;
-			printf ("Salimos del bucle\n");
-			break;
-			
-			//CONSULTAS
-			default :
-				printf ("NO existe consulta");
-				
-		} 
-	}
-	close(sock_conn); 
-	//pthread_exit(0);
-}
-void InicializarBD()
-{
-	
-	int err;
-	// Estructura especial para almacenar resultados de consultas 
-	
-	//Creamos una conexion al servidor MYSQL 
-	conn = mysql_init(NULL);
-	if (conn==NULL) {
-		printf ("Error al crear la conexi\ufff3n: %u %s\n", 
-				mysql_errno(conn), mysql_error(conn));
-		exit (1);
-	}
-	//inicializar la conexin
-	conn = mysql_real_connect (conn, "localhost","root", "mysql", "M3_Juego",0, NULL, 0);
-	if (conn==NULL) {
-		printf ("Error al inicializar la conexion: %u %s\n", 
-				mysql_errno(conn), mysql_error(conn));
-		exit (1);
-	}
-}
+Lista lista_conec;//Se crea la lista de conectados
+ListaInvi lista_partida;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; //declarar mutex, se usa cuando todos usan una variable en comun 
 
 int Registrarse(char Usuario[20], char Contra[20])
 {
@@ -445,122 +142,349 @@ int Loguearse(char Usuario1[20], char Contra1[20])
 		return 1;
 	}
 }
-/*int mostrarlista(char nombres[200]){
-<<<<<<< HEAD:servidor.txt
-int sock_conn, sock_listen, ret;
-MYSQL_RES *resultado;
-MYSQL_ROW row;
-//MYSQL *conn;
-int err;
-char consulta[200];
-//char nombres[200];
-//Nos genera una tabla con el nombre y la contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa que hemos recibido como parametros
-strcpy (consulta,"SELECT Jugador.Nombre FROM Jugador WHERE Jugador.Conectado=true;");
-printf("Consulta %s\n", consulta);
-err=mysql_query (conn, consulta);
-printf("He pasado este!\n");
-if (err!=0) 
-{
-printf ("Error al consultar datos de la base %u %s\n",
-mysql_errno(conn), mysql_error(conn));
-exit (1);
-}
-printf("Obtengo resultado de la consulta\n");
-resultado = mysql_store_result (conn);
-row = mysql_fetch_row (resultado);
-printf("Almaceno resultado consulta en row\n");
-nombres[0]='\0';
-//Al meter un usuario correcto pero una contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa erronea
-//La fila es NULL ya que no existira jugador con ese nombre y contrase￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾱa
-if(row == NULL)
-{
-printf ("No se han obtenido datos en la consulta\n");
-return -1;
-//return 'n';
+int AddUserConect(char usuario[20], int socket, Lista *l){
+	strcpy(l->usuarios[l->num].nombre,usuario);
+	l->usuarios[l->num].socket = socket;//Se guarda el socket para luego poder invitar a un usuario a jugar
+	l->num++;
 }
 
-//Retornamos un 1, usuario logeado con ￯﾿ﾯ￯ﾾ﾿￯ﾾﾃ￯﾿ﾯ￯ﾾﾾ￯ﾾﾩxito
-//En un futuro podemos hacer que retorne el usuario (mas info)
-else
+int QuitUserConect(char usuario[20], int socket, Lista *l)
 {
-
-printf ("se han obtenido datos en la consulta\n");
-//nombres = row[0];
-sprintf(nombres,"%s",row[0]);
-//string nombres = "";
-while(row != NULL){
-strcat(nombres,"-");
-//la columna 0 contiene el nombre del usuario
-strcat(nombres, row[0]);
-//nombres = nombres + row[0];
-//sprintf(nombres,"%s\n", row[0]);
-//obtenemos la siguiente fila
-row = mysql_fetch_row(resultado);
-}
-nombres[strlen(nombres)-1]='\0';
-//strcpy(p,nombres);
-//return p;
-return 0;
-}
-=======
-int sock_conn, sock_listen, ret;
-MYSQL_RES *resultado;
-MYSQL_ROW row;
-//MYSQL *conn;
-int err;
-char consulta[200];
-//char nombres[200];
-//Nos genera una tabla con el nombre y la contrase￯﾿ﾃ￯ﾾﾱa que hemos recibido como parametros
-strcpy (consulta,"SELECT Jugador.Nombre FROM Jugador WHERE Jugador.Conectado=true;");
-printf("Consulta %s\n", consulta);
-err=mysql_query (conn, consulta);
-printf("He pasado este!\n");
-if (err!=0) 
-{
-printf ("Error al consultar datos de la base %u %s\n",
-mysql_errno(conn), mysql_error(conn));
-exit (1);
-}
-printf("Obtengo resultado de la consulta\n");
-resultado = mysql_store_result (conn);
-row = mysql_fetch_row (resultado);
-printf("Almaceno resultado consulta en row\n");
-nombres[0]='\0';
-//Al meter un usuario correcto pero una contrase￯﾿ﾃ￯ﾾﾱa erronea
-//La fila es NULL ya que no existira jugador con ese nombre y contrase￯﾿ﾃ￯ﾾﾱa
-if(row == NULL)
-{
-printf ("No se han obtenido datos en la consulta\n");
-return -1;
-//return 'n';
+	//Buscamos usuario al que queremos eliminar en el vector "Conectados"
+	int i;
+	bool encontrado = false;
+	
+	
+	for (i=0;i<l->num;i++)
+	{
+		if (strcmp(l->usuarios[i].nombre,usuario) == 0)
+		{
+			encontrado = true;
+			int j = i;
+			for (j;j < (l->num-1);j++)
+			{
+				strcpy(l->usuarios[j].nombre,l->usuarios[j+1].nombre);
+				l->usuarios[j].socket=l->usuarios[j+1].socket;
+			}
+		}
+		
+		
+	}
+	if (encontrado){
+		printf("QuitUserConect encontrado, user: %s\n", usuario);
+		l->num--;
+	}else{
+		printf("QuitUserConect NO encontrado, user: %s\n", usuario);
+	}
+	
 }
 
-//Retornamos un 1, usuario logeado con ￯﾿ﾃ￯ﾾﾩxito
-//En un futuro podemos hacer que retorne el usuario (mas info)
-else
+void UpdateConectados(Lista *l){
+	int i = 0;
+	char conectados[200];
+	strcpy(conectados,"4/");
+	for(i = 0; i < l->num; i++){
+		strcat(conectados, l->usuarios[i].nombre);
+		strcat(conectados,"/");
+	}
+	conectados[strlen(conectados) - 1] = '\0';
+	printf("Respuesta: %s\n", conectados);
+	printf("Lista de los usuarios conectados: %s\n",conectados);
+	//Para informar a todos los demas usuarios
+	for(i = 0; i < l->num; i++){
+		write(l->usuarios[i].socket,conectados,strlen(conectados));
+	}
+	printf("Informacion enviada a los otros usuarios\n");
+}
+int BuscarUsuarioConectado(Lista *l,char usuario[],char socket[]){//Puede dar error
+	for(int i = 0; i < l->num; i++){
+		if(strcmp(l->usuarios[i].nombre, usuario)==0){
+			//socket = l->usuarios[i].socket;
+			sprintf(socket,"%d",l->usuarios[i].socket);
+			return 0;
+		}
+	}
+	return 1;
+}
+void EnviarInvitacion(int socket,char miNombre[20]){
+	char mensaje[200];
+	sprintf(mensaje,"6/SI/%s",miNombre);
+	printf("mensaje: %s\n",mensaje);
+	//strcpy(mensaje,"6/SI");
+	write(socket,mensaje,strlen(mensaje));
+}
+void mostrarListaConectados(Lista *l){
+	for(int i = 0; i < l->num; i++){
+		printf("%d -> usuario: %s | socket: %d\n",i,l->usuarios[i].nombre,l->usuarios[i].socket);
+	}
+}
+void mostrarListaInvitados(ListaInvi *l){
+	for(int i = 0; i < l->num; i++){
+		printf("%d -> usuario: %s | socket: %d | respuesta: %d\n",i,l->usuarios[i].nombre,l->usuarios[i].socket, l->usuarios[i].notificacion);
+	}
+}
+int BuscarNombreUsuarioConectado(Lista *l,char usuario_socket[],char nombre[]){
+	for(int i = 0; i < l->num; i++){
+		if(strcmp(l->usuarios[i].socket, usuario_socket)==0){
+			//socket = l->usuarios[i].socket;
+			sprintf(nombre,"%s",l->usuarios[i].nombre);
+			return 0;
+		}
+	}
+	return 1;
+}
+void GuardarConfirmacion(ListaInvi *l, char n[20], int confir){
+	for(int i = 0; i < l->num; i++){
+		if(strcmp(l->usuarios[i].nombre, n)==0){
+			//socket = l->usuarios[i].socket;
+			//sprintf(nombre,"%s",l->usuarios[i].nombre);
+			l->usuarios[i].notificacion = confir;
+			break;
+		}
+	}
+}
+int comprobarTodosAceptan(ListaInvi *l)
 {
+	for(int i = 0; i < l->num; i++){
+		if(l->usuarios[i].notificacion == 0){
+			return 1;
+		}else if(l->usuarios[i].notificacion == -1){
+			return 2;
+		}
+	}
+	return 0;
+}
+void enviarMensajeUsuarios(ListaInvi *l,char mensaje[80]){
+	for(int i = 0; i < l->num; i++){
+		write(l->usuarios[i].socket,mensaje,strlen(mensaje));
+	}
+}
+void *AtenderCliente(void *socket)
+{
+	int res;
+	char usuarios[200];
+	char *rows;
+	int sock_conn;
+	int *s;
+	s = (int *) socket;
+	sock_conn= *s;
+	
+	char miNombre[20];
+	
+	char peticion[512];
+	char respuesta[512];
+	int ret;
+	
+	int terminar = 0;
+	//El cliente podria hacer muchas peticiones
+	//mientras terminar sea igual a 0
+	while(terminar ==0){
+		ret=read(sock_conn,peticion, sizeof(peticion));
+		printf ("Recibido\n");
+		
+		// Tenemos que a?adirle la marca de fin de string 
+		// para que no escriba lo que hay despues en el buffer
+		peticion[ret]='\0';
+		
+		//Escribimos el nombre en la consola
+		
+		printf ("Se ha conectado: %s\n",peticion);
+		
+		//-----------Crear una funcion para usar theader aqui?
+		char *p = strtok( peticion, "/");
+		int codigo =  atoi (p);
+		printf ("case: %d\n",codigo);
+		
+		switch(codigo)
+		{
+			//REGISTRARSE
+		case 11 :
+			p = strtok(NULL, "/");
+			char Usuario[20];
+			strcpy (Usuario, p);
+			p = strtok(NULL, "/");
+			char Contra [20];
+			strcpy (Contra, p);
+			printf ("%s %s\n",Usuario,Contra);
+			if (Registrarse(Usuario,Contra) == 1)
+			{
+				printf ("SI\n");
+				strcpy (respuesta, "2/SI");
+			}
+			else
+			{
+				printf("NO\n");
+				strcpy (respuesta, "2/NO");
+			}
+			
+			printf ("%s\n", respuesta);
+			// Y lo enviamos
+			write (sock_conn,respuesta, strlen(respuesta));
+			break;
+			
+		case 12 :
+			//LOGUEARSE
+			//case 12 :
+			printf("Entra?");
+			p = strtok(NULL, "/");
+			char Usuario1[20];
+			strcpy (Usuario1, p);
+			p = strtok(NULL, "/");
+			char Contra1 [20];
+			strcpy (Contra1, p);
+			if (Loguearse(Usuario1,Contra1) == 1)
+			{
+				printf ("SI\n");
+				strcpy (respuesta, "3/SI");
+				strcpy(miNombre,Usuario1);
+				printf("Este es mi nombre: %s\n",miNombre);
+				AddUserConect(Usuario1,sock_conn,&lista_conec);
+				UpdateConectados(&lista_conec);
+			}
+			else
+			{
+				printf("NO\n");
+				strcpy (respuesta, "3/NO");
+			}
+			printf ("%s\n", respuesta);
+			/*char sock[20];
+			strcpy(sock,sock_conn);
+			printf("Mi socket: %s\n",sock);*/
+			// Y lo enviamos
+			write (sock_conn,respuesta, strlen(respuesta));
+			mostrarListaConectados(&lista_conec);
+			break;
+		case 13 :
+			printf("Entra al case 13\n");
+			if(partida_activa == 1 && strcmp(creador_partida, miNombre) != 0){
+				printf("Existe una partida ya creada");	
+			}else{
+				//pthread_mutex_lock( &mutex );
+				partida_activa = 1;
+				strcpy(creador_partida, miNombre);
+				printf("Yo %s voy a crear una partida\n",creador_partida);
+				//pthread_mutex_unlock( &mutex );
+				//Invitar
+				printf("partida activa: %d\n",partida_activa);
+				mostrarListaConectados(&lista_conec);
+				printf("Entra?");
+				p = strtok(NULL, "/");
+				char UsuarioInv[20];
+				strcpy (UsuarioInv, p);
+				char sock_inv[10];
+				int resp = BuscarUsuarioConectado(&lista_conec,UsuarioInv,sock_inv);
+				if (resp == 0)
+				{
+					printf("Comienza el mutex\n");
+					//comprobar antes el numero de invitados
+					pthread_mutex_lock( &mutex );
+					strcpy(lista_partida.usuarios[lista_partida.num].nombre,UsuarioInv);
+					lista_partida.usuarios[lista_partida.num].notificacion = -1;
+					lista_partida.usuarios[lista_partida.num].socket = atoi(sock_inv);//Se guarda el socket para luego poder invitar a un usuario a jugar
+					lista_partida.num++;
+					pthread_mutex_unlock( &mutex );
+					printf ("----------Lista de invitados---------\n");
+					mostrarListaInvitados(&lista_partida);
+					printf ("----------FIN lista de invitados---------\n");
+					printf ("SI\n");
+					strcpy (respuesta, "5/SI");
+					//strcpy(y,sock_conn);
+					printf("Socket de la persona a invitar: %s\n",sock_inv);
+					EnviarInvitacion(atoi(sock_inv),miNombre);
+				}
+				else
+				{
+					printf("NO\n");
+					strcpy (respuesta, "5/NO");
+				}
+				printf ("%s\n", respuesta);
+				// Y lo enviamos
+				write (sock_conn,respuesta, strlen(respuesta));
+				//close(sock_conn);
+			}	
+			break;
+		case 14:
+			//Acepta invitación
+			printf("Entra?\n");
+			p = strtok(NULL, "/");
+			char creador_partida[20];
+			strcpy (creador_partida, p);
+			p = strtok(NULL, "/");
+			char jugador[20];
+			strcpy (jugador, p);
+			p = strtok(NULL, "/");
+			char confirmacion[20];
+			strcpy (confirmacion, p);
+			if(strcmp(confirmacion, "true")==0){
+				printf("creador: %s | invitado: %s | respuesta: %s\n", creador_partida, jugador, confirmacion);
+				GuardarConfirmacion(&lista_partida, jugador, 1);
+				printf("------\n");
+				mostrarListaInvitados(&lista_partida);
+			}else if(strcmp(confirmacion, "false")==0){
+				printf("creador: %s | invitado: %s | respuesta: %s\n", creador_partida, jugador, confirmacion);
+				GuardarConfirmacion(&lista_partida, jugador, 0);
+				printf("------\n");
+				mostrarListaInvitados(&lista_partida);
+			}
+			printf("Numero de invitados: %d\n",lista_partida.num);
+				printf("-----Comienza la comprobacion ----\n");
+				if(lista_partida.num > 1){
+					printf("Comprobamos\n");
+					int compr = comprobarTodosAceptan(&lista_partida);
+					if(compr == 0){
+						printf("--Se juega la partida\n");
+						enviarMensajeUsuarios(&lista_partida,"7/SI");
+					}else if(compr == 2){
+						printf("--Esperando respuesta de otros jugadores\n");
+					}else if(compr == 1){
+						printf("--No se juega la partida\n");
+						enviarMensajeUsuarios(&lista_partida, "7/NO");
+					}
+				}
+				printf("-----Fin de la comprobacion----\n");
+				printf("-Faltan por confirmar\n");
+			break;
+		case 20: //El usuario se desconecta y actualizamos lista Conectados
+			QuitUserConect(Usuario1,sock_conn,&lista_conec);
+			mostrarListaConectados(&lista_conec);
+			UpdateConectados(&lista_conec);
+			
+			//UpdateConectados(&lista_conec);
+			terminar = -1;
+			printf ("Salimos del bucle\n");
+			break;
+			
+			//CONSULTAS
+			default :
+				printf ("NO existe consulta");
+				
+		} 
+	}
+	close(sock_conn); 
+	//pthread_exit(0);
+}
+void InicializarBD()
+{
+	
+	int err;
+	// Estructura especial para almacenar resultados de consultas 
+	
+	//Creamos una conexion al servidor MYSQL 
+	conn = mysql_init(NULL);
+	if (conn==NULL) {
+		printf ("Error al crear la conexi\ufff3n: %u %s\n", 
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	//inicializar la conexin
+	conn = mysql_real_connect (conn, "localhost","root", "mysql", "M3_Juego",0, NULL, 0);
+	if (conn==NULL) {
+		printf ("Error al inicializar la conexion: %u %s\n", 
+				mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+}
 
-printf ("se han obtenido datos en la consulta\n");
-//nombres = row[0];
-sprintf(nombres,"%s",row[0]);
-//string nombres = "";
-while(row != NULL){
-strcat(nombres,"-");
-//la columna 0 contiene el nombre del usuario
-strcat(nombres, row[0]);
-//nombres = nombres + row[0];
-//sprintf(nombres,"%s\n", row[0]);
-//obtenemos la siguiente fila
-row = mysql_fetch_row(resultado);
-}
-nombres[strlen(nombres)-1]='\0';
-//strcpy(p,nombres);
-//return p;
-return 0;
-}
->>>>>>> a07b640ac30fcca7b5a235d20663de7feeac3a88:servidor-Oscar.txt
-}
-*/
 
 int main(int argc, char *argv[])
 {
@@ -600,7 +524,11 @@ int main(int argc, char *argv[])
 	for(;;){
 		printf ("Escuchando\n");
 		
-		sock_conn = accept(sock_listen, NULL, NULL);
+		sock_conn 
+			
+			
+			
+			= accept(sock_listen, NULL, NULL);
 		printf ("He recibido conexion\n");
 		
 		sockets[i] =sock_conn;

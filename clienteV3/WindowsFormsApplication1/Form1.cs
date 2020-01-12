@@ -21,6 +21,10 @@ namespace WindowsFormsApplication1
         Thread atender;
         byte[] msg2;
         bool res_partida;
+        string mi_nom;
+        string[] usua_invitados = new string[4];
+        int cont_invi = 0;
+        string invitado;
 
         public Form1()
         {
@@ -42,6 +46,16 @@ namespace WindowsFormsApplication1
             Desconectar.Enabled = false;
             box_invi.Enabled = false;
             btn_Invitar.Enabled = false;
+            txtUser.Text = "Juan";
+            txtPassword.Text = "1A";
+            //crearInvitadosVacio();
+        }
+        private void crearInvitadosVacio()
+        {
+            for (int i = 0; i < 4; i++ )
+            {
+                usua_invitados[i] = "";
+            }
         }
 
         private void bntConectar_Click(object sender, EventArgs e)
@@ -141,36 +155,27 @@ namespace WindowsFormsApplication1
         delegate void desactivarBtn();
         delegate void desactivarBtn2();
         delegate void inviPrueba();
-        public void crearForm()
+        public void crearForm(string nombre)
         {
             Form2 n = new Form2();
+            n.setNomInvitacion(nombre);
             n.ShowDialog();
             bool res = n.getRespuesta();
             if (res == true)
             {
                 MessageBox.Show("Has aceptado");
-                string mensaje = "14/";
+                string mensaje = "14/" + nombre + "/" + this.mi_nom + "/true";
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
             }
             else
             {
-                MessageBox.Show("Has rechazado");
+                MessageBox.Show("Has rechazado"); 
+                string mensaje = "14/" + nombre + "/" + this.mi_nom + "/false";
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
             }
             res = this.res_partida;
-        }
-        public void InvitarPartida()
-        {
-            label_mensajes.Text = "Mensaje: Te ha llegado una invitación";
-                //MessageBox.Show("Te ha llegado una invitación");
-                /*if (res == true)
-                {
-                    label_mensajes.Text = "Mensaje: Has aceptado la partida";
-                }
-                else
-                {
-                    label_mensajes.Text = "Mensaje: Has rechazado la partida";
-                }*/
         }
         public void ListaConectados(string[] mensaje)
         {
@@ -193,7 +198,7 @@ namespace WindowsFormsApplication1
             string[] ListaSeparada = mensaje;
             int i;
             //Colocamos info en la tabla
-            for (i = 0; i < ListaSeparada.Length; i++)
+            for (i = 1; i < ListaSeparada.Length; i++)
             {
                 row = tabla.NewRow();
                 row["Usuario"] = ListaSeparada[i];
@@ -225,7 +230,8 @@ namespace WindowsFormsApplication1
                         //Nos logeamos con éxito
                         if (mensaje[1] == "SI")
                         {
-                            MessageBox.Show("Te has logeado con ÉXITO!!!");
+                            this.mi_nom = txtUser.Text;
+                            MessageBox.Show("Te has logeado con ÉXITO!!! " + this.mi_nom);
                             //Form2 mostrar = new Form2();
                             //mostrar.setServer(this.server);
                             //mostrar.Show();
@@ -244,6 +250,8 @@ namespace WindowsFormsApplication1
                         if (mensaje[1] == "SI")
                         {
                             MessageBox.Show("Se ha enviado la invitación con ÉXITO!!!");
+                            usua_invitados[cont_invi] = this.invitado;
+                            cont_invi++;
                             //Form2 mostrar = new Form2();
                             //mostrar.setServer(this.server);
                             //mostrar.Show();
@@ -251,26 +259,66 @@ namespace WindowsFormsApplication1
                         else
                         {
                             MessageBox.Show("Usuario NO EXISTE.");
+
+                            usua_invitados[cont_invi] = "";
                         }
                         break;
                     case 6:
-                        ThreadStart n = delegate { crearForm(); };
+                        string nombres = mensaje[2];
+                        ThreadStart n = delegate { crearForm(nombres); };
                         Thread t = new Thread(n);
                         t.Start();
+                        break;
+                    case 7:
+                        if (mensaje[1] == "SI")
+                        {
+                            MessageBox.Show("Se juega la partida");
+                        }
+                        else if (mensaje[1] == "NO")
+                        {
+                            MessageBox.Show("Alguien ha rechazado, no se juega");
+                        }
                         break;
                     default:
                         break;
                 }
+                opcion = 0;
                 mensaje = null;
             }
         }
 
         private void btn_Invitar_Click(object sender, EventArgs e)
         {
-            string jugador = box_invi.Text; 
-            string mensaje = "13/" + jugador;
-            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
+            if (cont_invi == 2)
+            {
+                MessageBox.Show("Se ha superado el numero máximo de jugadores");
+            }
+            else
+            {
+                string jugador = box_invi.Text;
+                invitado = jugador;
+                bool encontrado = false;
+                int i = 0;
+                while (i < this.cont_invi && encontrado == false)
+                {
+                    if (usua_invitados[i] == jugador)
+                    {
+                        encontrado = true;
+                    }
+                    i++;
+                }
+                if (encontrado == false)
+                {
+                    //usua_invitados[cont_invi] = jugador;
+                    string mensaje = "13/" + jugador;
+                    byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+                    server.Send(msg);
+                }
+                else
+                {
+                    MessageBox.Show("Ya has invitado a esta persona");
+                }
+            }
         }
 
     }
