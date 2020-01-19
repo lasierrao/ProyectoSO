@@ -254,10 +254,27 @@ int comprobarTodosAceptan(ListaInvi *l)
 	}
 	return 0;
 }
-void enviarMensajeUsuarios(ListaInvi *l,char mensaje[80]){
+void enviarMensajeUsuarios(ListaInvi *l,char respuesta[10]){
+	char mensaje[80];
+	int i ;
+	if(strcmp(respuesta,"SI") == 0){
+		for(i = 0; i < l->num; i++){
+			sprintf(mensaje,"7/SI/%d",i);
+			write(l->usuarios[i].socket,mensaje,strlen(mensaje));
+		}
+	}else if(strcmp(respuesta,"NO") == 0){
+		for(i = 0; i < l->num; i++){
+			sprintf(mensaje,"7/NO");
+			write(l->usuarios[i].socket,mensaje,strlen(mensaje));
+		}
+	}
+}
+void enviarPosiciones(ListaInvi *l,char posicion[20]){
+	char mensaje[80];
+	sprintf(mensaje, "9/%s",posicion);
 	for(int i = 0; i < l->num; i++){
 		write(l->usuarios[i].socket,mensaje,strlen(mensaje));
-	}
+	}	
 }
 void *AtenderCliente(void *socket)
 {
@@ -297,6 +314,15 @@ void *AtenderCliente(void *socket)
 		
 		switch(codigo)
 		{
+		case 8:
+			printf("Entra al case 8\n");
+			p = strtok(NULL, "/");
+			char posicion[20];
+			strcpy(posicion, p);
+			printf("posicion: %s\n",posicion);
+			enviarPosiciones(&lista_partida, posicion);
+			printf("Termina el case 8\n");
+			break;
 			//REGISTRARSE
 		case 11 :
 			p = strtok(NULL, "/");
@@ -359,11 +385,17 @@ void *AtenderCliente(void *socket)
 			if(partida_activa == 1 && strcmp(creador_partida, miNombre) != 0){
 				printf("Existe una partida ya creada");	
 			}else{
-				//pthread_mutex_lock( &mutex );
 				partida_activa = 1;
 				strcpy(creador_partida, miNombre);
 				printf("Yo %s voy a crear una partida\n",creador_partida);
-				//pthread_mutex_unlock( &mutex );
+				printf("Comienza el mutex\n");
+				//comprobar antes el numero de invitados
+				pthread_mutex_lock( &mutex );
+				strcpy(lista_partida.usuarios[lista_partida.num].nombre,miNombre);
+				lista_partida.usuarios[lista_partida.num].notificacion = 1;
+				lista_partida.usuarios[lista_partida.num].socket = sock_conn;
+				lista_partida.num++;
+				pthread_mutex_unlock( &mutex );
 				//Invitar
 				printf("partida activa: %d\n",partida_activa);
 				mostrarListaConectados(&lista_conec);
@@ -427,22 +459,22 @@ void *AtenderCliente(void *socket)
 				mostrarListaInvitados(&lista_partida);
 			}
 			printf("Numero de invitados: %d\n",lista_partida.num);
-				printf("-----Comienza la comprobacion ----\n");
-				if(lista_partida.num > 1){
-					printf("Comprobamos\n");
-					int compr = comprobarTodosAceptan(&lista_partida);
-					if(compr == 0){
-						printf("--Se juega la partida\n");
-						enviarMensajeUsuarios(&lista_partida,"7/SI");
-					}else if(compr == 2){
-						printf("--Esperando respuesta de otros jugadores\n");
-					}else if(compr == 1){
-						printf("--No se juega la partida\n");
-						enviarMensajeUsuarios(&lista_partida, "7/NO");
-					}
+			printf("-----Comienza la comprobacion ----\n");
+			if(lista_partida.num > 1){
+				printf("Comprobamos\n");
+				int compr = comprobarTodosAceptan(&lista_partida);
+				if(compr == 0){
+					printf("--Se juega la partida\n");
+					enviarMensajeUsuarios(&lista_partida,"SI");
+				}else if(compr == 2){
+					printf("--Esperando respuesta de otros jugadores\n");
+				}else if(compr == 1){
+					printf("--No se juega la partida\n");
+					enviarMensajeUsuarios(&lista_partida, "NO");
 				}
-				printf("-----Fin de la comprobacion----\n");
-				printf("-Faltan por confirmar\n");
+			}
+			printf("-----Fin de la comprobacion----\n");
+			printf("-Faltan por confirmar\n");
 			break;
 		case 20: //El usuario se desconecta y actualizamos lista Conectados
 			QuitUserConect(Usuario1,sock_conn,&lista_conec);

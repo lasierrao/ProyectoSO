@@ -140,3 +140,4 @@ C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyec
 C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO\clienteV3\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form2.resources
 C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO\clienteV3\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
 C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO\clienteV3\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.GenerateResource.Cache
+C:\Users\Christian\Documents\Universidad\UPC\4er Cuatrimestre(Repetir)\SO\Proyecto\ProyectoSO\clienteV3\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.InterficieGrafica.resources

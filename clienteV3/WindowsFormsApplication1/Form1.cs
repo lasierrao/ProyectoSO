@@ -26,6 +26,7 @@ namespace WindowsFormsApplication1
         int cont_invi = 0;
         string invitado;
 
+        InterficieGrafica ig;
         public Form1()
         {
             InitializeComponent();
@@ -58,6 +59,12 @@ namespace WindowsFormsApplication1
             }
         }
 
+        private void ponerEnMarchaJuego(string perso)
+        {
+            ig = new InterficieGrafica(Convert.ToInt32(perso), this.server);
+            //ig.miPersonaje(Convert.ToInt32(mensaje[2]));
+            ig.ShowDialog();
+        }
         private void bntConectar_Click(object sender, EventArgs e)
         {
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -155,6 +162,11 @@ namespace WindowsFormsApplication1
         delegate void desactivarBtn();
         delegate void desactivarBtn2();
         delegate void inviPrueba();
+        delegate void ponerNombre();
+        public void ponerNombreEtiqueta()
+        {
+            label1.Text = this.mi_nom; 
+        }
         public void crearForm(string nombre)
         {
             Form2 n = new Form2();
@@ -232,6 +244,8 @@ namespace WindowsFormsApplication1
                         {
                             this.mi_nom = txtUser.Text;
                             MessageBox.Show("Te has logeado con ÉXITO!!! " + this.mi_nom);
+                            ponerNombre delegadoNom = new ponerNombre(ponerNombreEtiqueta);
+                            label1.Invoke(delegadoNom, new object[]{});
                             //Form2 mostrar = new Form2();
                             //mostrar.setServer(this.server);
                             //mostrar.Show();
@@ -272,12 +286,23 @@ namespace WindowsFormsApplication1
                     case 7:
                         if (mensaje[1] == "SI")
                         {
-                            MessageBox.Show("Se juega la partida");
+                            //MessageBox.Show("Se juega la partida " + mensaje[2]);
+
+                            string numero = mensaje[2];
+                            ThreadStart juego = delegate { ponerEnMarchaJuego(numero); };
+                            Thread tjuego = new Thread(juego);
+                            tjuego.Start();
+                            /*ig = new InterficieGrafica(Convert.ToInt32(mensaje[2]),this.server);
+                            //ig.miPersonaje(Convert.ToInt32(mensaje[2]));
+                            ig.ShowDialog();*/
                         }
                         else if (mensaje[1] == "NO")
                         {
                             MessageBox.Show("Alguien ha rechazado, no se juega");
                         }
+                        break;
+                    case 9:
+                        ig.guardarPosicionOtroJugador(mensaje[1]);
                         break;
                     default:
                         break;
