@@ -17,8 +17,8 @@ namespace WindowsFormsApplication1
         Socket server;
 
         PictureBox[] jugador = new PictureBox[2];
-        PictureBox[] bomba = new PictureBox[2];
-        PictureBox[] explosion = new PictureBox[5];
+        PictureBox[] bomba = new PictureBox[4];
+        PictureBox[,] explosion = new PictureBox[5,4];
         PictureBox[,] bloques = new PictureBox[4, 6];
         PictureBox[,] suelo = new PictureBox[9, 13];
         //en ubicacion se escogera la imagen que se usará para los bloques
@@ -45,8 +45,14 @@ namespace WindowsFormsApplication1
 
         int cont = 4;
         int cont2 = 4;
+        int cont3 = 4;
+        int cont4 = 4;
+
         int cont_muertes = 0;
+        int cont_muertes1 = 0;
+
         int cont_bombas = 0;
+        int cont_bombas1 = 0;
 
         public InterficieGrafica(int personaje, Socket server)
         {
@@ -56,6 +62,8 @@ namespace WindowsFormsApplication1
             IniciarSueloImagen();
             IniciarJugadorImagen();
             IniciarBloquesImagen();
+            IniciarBombaImagen();
+            IniciarExplosionImagen();
 
             //Timer timer = new Timer();
             timer1.Interval = 1000;
@@ -128,25 +136,79 @@ namespace WindowsFormsApplication1
             //mostramos por pantalla las imagenes
             panel1.Controls.Add(jugador[1]);
         }
-        public void IniciarBombaImagen(int posx, int posy)
+        public void IniciarBombaImagen()
+        {
+            for(int i = 0; i < 4;i++){
+                bomba[i] = new PictureBox();
+                //
+                bomba[i].ClientSize = new Size(50, 50);//tamaño de la imagen
+                bomba[i].SizeMode = PictureBoxSizeMode.StretchImage;
+                bomba[i].Image = (Image)ubicacion_bomba;
+                //ponemos una etiqueta a cada imagen
+                /*img_vec[i].Tag = i;
+                img_vec[i].Click += new System.EventHandler(this.evento);*/
+                bomba[i].Visible = false;
+                bomba[i].BringToFront();
+
+            }
+        }
+        delegate void ponerPosicionBomba0(int x, int y);
+        delegate void ponerPosicionBomba1(int x, int y);
+        delegate void ponerPosicionBomba2(int x, int y);
+        delegate void ponerPosicionBomba3(int x, int y);
+        private void posicionBomba0(int x, int y)
+        {
+            //punto en donde se encontrará la imagen
+            bomba[0].Location = new Point(x, y);
+            bomba[0].Visible = true;
+            //mostramos por pantalla las imagenes
+            panel1.Controls.Add(bomba[0]);
+            cont_bombas++;
+             timer1.Enabled = true;
+            timer1.Start();
+            
+        }
+        private void posicionBomba1(int x, int y)
+        {
+            //punto en donde se encontrará la imagen
+            bomba[1].Location = new Point(x, y);
+            bomba[1].Visible = true;
+            //mostramos por pantalla las imagenes
+            panel1.Controls.Add(bomba[1]);
+            cont_bombas++;    
+            timer2.Enabled = true;
+            timer2.Start();
+
+        }
+        private void posicionBomba2(int x, int y)
+        {
+            //punto en donde se encontrará la imagen
+            bomba[2].Location = new Point(x, y);
+            bomba[2].Visible = true;
+            //mostramos por pantalla las imagenes
+            panel1.Controls.Add(bomba[2]);
+            cont_bombas++;
+            timer3.Enabled = true;
+            timer3.Start();
+
+        }
+        private void posicionBomba3(int x, int y)
+        {
+            //punto en donde se encontrará la imagen
+            bomba[3].Location = new Point(x, y);
+            bomba[3].Visible = true;
+            //mostramos por pantalla las imagenes
+            panel1.Controls.Add(bomba[3]);
+            cont_bombas++;
+            timer4.Enabled = true;
+            timer4.Start();
+
+        }
+        private void ponerBombaImagenOtro(int numpersonaje, int posx, int posy)
         {
             int x = posx;
             int y = posy;
-            /*if (this.tecla_up == 1 && posy % 50 != 0)//posy < posy + 25)
-            {
-                y = posy + 25;
-            }
-            else if (this.tecla_down == 1 && posy % 50 != 0)
-            {
-                y = posy - 25;
-            }else if(this.tecla_right == 1 && posx % 50 != 0)
-            {
-                x = posx - 25;
-            }
-            else if (this.tecla_left == 1 && posx % 50 != 0)
-            {
-                x = posx + 25;
-            }*/
+
             if (this.tecla_up == 1 && posy % 50 != 0)
             {
                 y = posy + 25;
@@ -163,135 +225,255 @@ namespace WindowsFormsApplication1
             {
                 x = posx + 25;
             }
-            if (cont_bombas == 0)
-            {
-                bomba[0] = new PictureBox();
-                //
-                bomba[0].ClientSize = new Size(50, 50);//tamaño de la imagen
-                //punto en donde se encontrará la imagen
-                bomba[0].Location = new Point(x, y);
-                bomba[0].SizeMode = PictureBoxSizeMode.StretchImage;
-                bomba[0].Image = (Image)ubicacion_bomba;
-                //ponemos una etiqueta a cada imagen
-                /*img_vec[i].Tag = i;
-                img_vec[i].Click += new System.EventHandler(this.evento);*/
-                bomba[0].Visible = true;
-                bomba[0].BringToFront();
 
-                //mostramos por pantalla las imagenes
-                panel1.Controls.Add(bomba[0]);
-                cont_bombas++;
-                timer1.Enabled = true;
-                timer1.Start();
-            }
-            else if (cont_bombas == 1)
+            if (numpersonaje == 0)
             {
-                bomba[1] = new PictureBox();
-                //
-                bomba[1].ClientSize = new Size(50, 50);//tamaño de la imagen
-                //punto en donde se encontrará la imagen
-                bomba[1].Location = new Point(x, y);
-                bomba[1].SizeMode = PictureBoxSizeMode.StretchImage;
-                bomba[1].Image = (Image)ubicacion_bomba;
-                //ponemos una etiqueta a cada imagen
-                /*img_vec[i].Tag = i;
-                img_vec[i].Click += new System.EventHandler(this.evento);*/
-                bomba[1].Visible = true;
-                bomba[1].BringToFront();
-
-                //mostramos por pantalla las imagenes
-                panel1.Controls.Add(bomba[1]);
-                cont_bombas++;
-                timer2.Enabled = true;
-                timer2.Start();
+                if (cont_bombas == 0)
+                {
+                    ponerPosicionBomba0 delegadobomb = new ponerPosicionBomba0(posicionBomba0);
+                    bomba[0].Invoke(delegadobomb, new object[] { x, y });
+                    //punto en donde se encontrará la imagen
+                    /*bomba[0].Location = new Point(x, y);
+                    bomba[0].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[0]);
+                    cont_bombas++;
+                    timer1.Enabled = true;
+                    timer1.Start();*/
+                }
+                else if (cont_bombas == 1)
+                {
+                    ponerPosicionBomba1 delegadobomb = new ponerPosicionBomba1(posicionBomba1);
+                    bomba[1].Invoke(delegadobomb, new object[] { x, y });
+                    //punto en donde se encontrará la imagen
+                    /*bomba[1].Location = new Point(x, y);
+                    bomba[1].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[1]);
+                    cont_bombas++;
+                    timer2.Enabled = true;
+                    timer2.Start();*/
+                }
+                else if (timer2.Enabled == false && cont_bombas == 2)
+                {
+                    cont_bombas = 0;
+                }
             }
-            else if (timer2.Enabled == false && cont_bombas == 2)
+            else if (numpersonaje == 1)
             {
-                cont_bombas = 0;
+                if (cont_bombas1 == 0)
+                {
+                    /*ponerPosicionBomba2 delegadobomb = new ponerPosicionBomba2(posicionBomba2);
+                    bomba[2].Invoke(delegadobomb, new object[] { x, y });*/
+                    //punto en donde se encontrará la imagen
+                    bomba[2].Location = new Point(x, y);
+                    bomba[2].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[2]);
+                    cont_bombas1++;
+                    timer3.Enabled = true;
+                    timer3.Start();
+                }
+                else if (cont_bombas1 == 1)
+                {
+                    ponerPosicionBomba3 delegadobomb = new ponerPosicionBomba3(posicionBomba3);
+                    bomba[3].Invoke(delegadobomb, new object[] { x, y });
+                    //punto en donde se encontrará la imagen
+                    /*bomba[3].Location = new Point(x, y);
+                    bomba[3].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[3]);
+                    cont_bombas1++;
+                    timer4.Enabled = true;
+                    timer4.Start();*/
+                }
+                else if (timer4.Enabled == false && cont_bombas1 == 2)
+                {
+                    cont_bombas1 = 0;
+                }
             }
         }
-        public void IniciarExplosionImagen(int posx, int posy)
+        private void ponerBombaImagen(int numpersonaje, int posx, int posy)
         {
-            explosion[0] = new PictureBox();
-            //
-            explosion[0].ClientSize = new Size(50, 50);//tamaño de la imagen
-            //punto en donde se encontrará la imagen
-            explosion[0].Location = new Point(posx, posy);
-            explosion[0].SizeMode = PictureBoxSizeMode.StretchImage;
-            explosion[0].Image = (Image)ubicacion_expl_centro;
-            //ponemos una etiqueta a cada imagen
-            /*img_vec[i].Tag = i;
-            img_vec[i].Click += new System.EventHandler(this.evento);*/
-            explosion[0].Visible = true;
-            explosion[0].BringToFront();
+            int x = posx;
+            int y = posy;
 
+            if (this.tecla_up == 1 && posy % 50 != 0)
+            {
+                y = posy + 25;
+            }
+            else if (this.tecla_down == 1 && posy % 50 != 0)
+            {
+                y = posy - 25;
+            }
+            else if (this.tecla_right == 1 && posx % 50 != 0)
+            {
+                x = posx - 25;
+            }
+            else if (this.tecla_left == 1 && posx % 50 != 0)
+            {
+                x = posx + 25;
+            }
+
+            if (numpersonaje == 0)
+            {
+                if (cont_bombas == 0)
+                {
+                    //punto en donde se encontrará la imagen
+                    bomba[0].Location = new Point(x, y);
+                    bomba[0].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[0]);
+                    cont_bombas++;
+                    timer1.Enabled = true;
+                    timer1.Start();
+                }
+                else if (cont_bombas == 1)
+                {
+                    bomba[1].Location = new Point(x, y);
+                    bomba[1].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[1]);
+                    cont_bombas++;
+                    timer2.Enabled = true;
+                    timer2.Start();
+                }
+                else if (timer2.Enabled == false && cont_bombas == 2)
+                {
+                    cont_bombas = 0;
+                }
+            }
+            else if (numpersonaje == 1)
+            {
+                if (cont_bombas1 == 0)
+                {
+                    //punto en donde se encontrará la imagen
+                    bomba[2].Location = new Point(x, y);
+                    bomba[2].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[2]);
+                    cont_bombas1++;
+                    timer3.Enabled = true;
+                    timer3.Start();
+                }
+                else if (cont_bombas1 == 1)
+                {
+                    //punto en donde se encontrará la imagen
+                    bomba[3].Location = new Point(x, y);
+                    bomba[3].Visible = true;
+                    //mostramos por pantalla las imagenes
+                    panel1.Controls.Add(bomba[3]);
+                    cont_bombas1++;
+                    timer4.Enabled = true;
+                    timer4.Start();
+                }
+                else if (timer4.Enabled == false && cont_bombas1 == 2)
+                {
+                    cont_bombas1 = 0;
+                }
+            }
+        }
+        public void IniciarExplosionImagen()
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                explosion[0, j] = new PictureBox();
+                //
+                explosion[0, j].ClientSize = new Size(50, 50);//tamaño de la imagen
+                explosion[0, j].SizeMode = PictureBoxSizeMode.StretchImage;
+                explosion[0, j].Image = (Image)ubicacion_expl_centro;
+                //ponemos una etiqueta a cada imagen
+                /*img_vec[i].Tag = i;
+                img_vec[i].Click += new System.EventHandler(this.evento);*/
+                explosion[0, j].Visible = false;
+                explosion[0, j].BringToFront();
+
+                //**************************up******************************
+                explosion[1, j] = new PictureBox();
+                //
+                explosion[1, j].ClientSize = new Size(50, 50);//tamaño de la imagen
+                explosion[1, j].SizeMode = PictureBoxSizeMode.StretchImage;
+                explosion[1, j].Image = (Image)ubicacion_expl_up;
+                //ponemos una etiqueta a cada imagen
+                /*img_vec[i].Tag = i;
+                img_vec[i].Click += new System.EventHandler(this.evento);*/
+                explosion[1, j].Visible = false;
+                explosion[1, j].BringToFront();
+
+                //**************************down******************************
+                explosion[2, j] = new PictureBox();
+                //
+                explosion[2, j].ClientSize = new Size(50, 50);//tamaño de la imagen
+                explosion[2, j].SizeMode = PictureBoxSizeMode.StretchImage;
+                explosion[2, j].Image = (Image)ubicacion_expl_down;
+                //ponemos una etiqueta a cada imagen
+                /*img_vec[i].Tag = i;
+                img_vec[i].Click += new System.EventHandler(this.evento);*/
+                explosion[2, j].Visible = false;
+                explosion[2, j].BringToFront();
+
+                //**************************left******************************
+                explosion[3, j] = new PictureBox();
+                //
+                explosion[3, j].ClientSize = new Size(50, 50);//tamaño de la imagen
+                explosion[3, j].SizeMode = PictureBoxSizeMode.StretchImage;
+                explosion[3, j].Image = (Image)ubicacion_expl_left;
+                //ponemos una etiqueta a cada imagen
+                /*img_vec[i].Tag = i;
+                img_vec[i].Click += new System.EventHandler(this.evento);*/
+                explosion[3, j].Visible = false;
+                explosion[3, j].BringToFront();
+
+                //**************************right******************************
+                explosion[4, j] = new PictureBox();
+                //
+                explosion[4, j].ClientSize = new Size(50, 50);//tamaño de la imagen
+                explosion[4, j].SizeMode = PictureBoxSizeMode.StretchImage;
+                explosion[4, j].Image = (Image)ubicacion_expl_right;
+                //ponemos una etiqueta a cada imagen
+                /*img_vec[i].Tag = i;
+                img_vec[i].Click += new System.EventHandler(this.evento);*/
+                explosion[4, j].Visible = false;
+                explosion[4, j].BringToFront();
+
+            }
+        }
+        private void ponerExplosionImagen(int num_bomba, int posx, int posy)
+        {
+            //************************centro******************************
+            //punto en donde se encontrará la imagen
+            explosion[0, num_bomba].Location = new Point(posx, posy);
+            explosion[0, num_bomba].Visible = true;
             //mostramos por pantalla las imagenes
-            panel1.Controls.Add(explosion[0]);
+            panel1.Controls.Add(explosion[0, num_bomba]);
+
             //**************************up******************************
-            explosion[1] = new PictureBox();
-            //
-            explosion[1].ClientSize = new Size(50, 50);//tamaño de la imagen
             //punto en donde se encontrará la imagen
-            explosion[1].Location = new Point(posx, posy - 50);
-            explosion[1].SizeMode = PictureBoxSizeMode.StretchImage;
-            explosion[1].Image = (Image)ubicacion_expl_up;
-            //ponemos una etiqueta a cada imagen
-            /*img_vec[i].Tag = i;
-            img_vec[i].Click += new System.EventHandler(this.evento);*/
-            explosion[1].Visible = true;
-            explosion[1].BringToFront();
-
+            explosion[1, num_bomba].Location = new Point(posx, posy - 50);
+            explosion[1, num_bomba].Visible = true;
             //mostramos por pantalla las imagenes
-            panel1.Controls.Add(explosion[1]);
+            panel1.Controls.Add(explosion[1, num_bomba]);
+
             //**************************down******************************
-            explosion[2] = new PictureBox();
-            //
-            explosion[2].ClientSize = new Size(50, 50);//tamaño de la imagen
             //punto en donde se encontrará la imagen
-            explosion[2].Location = new Point(posx, posy + 50);
-            explosion[2].SizeMode = PictureBoxSizeMode.StretchImage;
-            explosion[2].Image = (Image)ubicacion_expl_down;
-            //ponemos una etiqueta a cada imagen
-            /*img_vec[i].Tag = i;
-            img_vec[i].Click += new System.EventHandler(this.evento);*/
-            explosion[2].Visible = true;
-            explosion[2].BringToFront();
-
+            explosion[2, num_bomba].Location = new Point(posx, posy + 50);
+            explosion[2, num_bomba].Visible = true;
             //mostramos por pantalla las imagenes
-            panel1.Controls.Add(explosion[2]);
+            panel1.Controls.Add(explosion[2, num_bomba]);
+
             //**************************left******************************
-            explosion[3] = new PictureBox();
-            //
-            explosion[3].ClientSize = new Size(50, 50);//tamaño de la imagen
             //punto en donde se encontrará la imagen
-            explosion[3].Location = new Point(posx - 50, posy);
-            explosion[3].SizeMode = PictureBoxSizeMode.StretchImage;
-            explosion[3].Image = (Image)ubicacion_expl_left;
-            //ponemos una etiqueta a cada imagen
-            /*img_vec[i].Tag = i;
-            img_vec[i].Click += new System.EventHandler(this.evento);*/
-            explosion[3].Visible = true;
-            explosion[3].BringToFront();
-
+            explosion[3, num_bomba].Location = new Point(posx - 50, posy);
+            explosion[3, num_bomba].Visible = true;
             //mostramos por pantalla las imagenes
-            panel1.Controls.Add(explosion[3]);
+            panel1.Controls.Add(explosion[3, num_bomba]);
+
             //**************************right******************************
-            explosion[4] = new PictureBox();
-            //
-            explosion[4].ClientSize = new Size(50, 50);//tamaño de la imagen
             //punto en donde se encontrará la imagen
-            explosion[4].Location = new Point(posx + 50, posy);
-            explosion[4].SizeMode = PictureBoxSizeMode.StretchImage;
-            explosion[4].Image = (Image)ubicacion_expl_right;
-            //ponemos una etiqueta a cada imagen
-            /*img_vec[i].Tag = i;
-            img_vec[i].Click += new System.EventHandler(this.evento);*/
-            explosion[4].Visible = true;
-            explosion[4].BringToFront();
-
+            explosion[4, num_bomba].Location = new Point(posx + 50, posy);
+            explosion[4, num_bomba].Visible = true;
             //mostramos por pantalla las imagenes
-            panel1.Controls.Add(explosion[4]);
-
+            panel1.Controls.Add(explosion[4, num_bomba]);
         }
         public void timer2_Tick(object sender, EventArgs e)
         {
@@ -302,13 +484,13 @@ namespace WindowsFormsApplication1
                 cont2 = 4;
                 for (int i = 0; i < 5; i++)
                 {
-                    explosion[i].Visible = false;
+                    explosion[i,1].Visible = false;
                 }
             }
             else if (cont2 == 1)
             {
                 bomba[1].Visible = false;
-                IniciarExplosionImagen(bomba[1].Location.X, bomba[1].Location.Y);
+                ponerExplosionImagen(1, bomba[1].Location.X, bomba[1].Location.Y);
                 int res = ComprobarTocadoExplosion(new Point(jugador[0].Location.X, jugador[0].Location.Y));
                 if (res == 1)
                 {
@@ -332,13 +514,13 @@ namespace WindowsFormsApplication1
                 cont = 4;
                 for (int i = 0; i < 5; i++)
                 {
-                    explosion[i].Visible = false;
+                    explosion[i,0].Visible = false;
                 }
             }
             else if (cont == 1)
             {
                 bomba[0].Visible = false;
-                IniciarExplosionImagen(bomba[0].Location.X, bomba[0].Location.Y);
+                ponerExplosionImagen(0, bomba[0].Location.X, bomba[0].Location.Y);
                 int res = ComprobarTocadoExplosion(new Point(jugador[0].Location.X, jugador[0].Location.Y));
                 if (res == 1)
                 {
@@ -454,8 +636,10 @@ namespace WindowsFormsApplication1
         {
             for (int i = 0; i < 5; i++)
             {
-                if (posicion.X == explosion[i].Location.X
-                    && posicion.Y == explosion[i].Location.Y)
+                if (posicion.X == explosion[i,0].Location.X
+                    && posicion.Y == explosion[i,0].Location.Y
+                    || posicion.X == explosion[i, 1].Location.X
+                    && posicion.Y == explosion[i, 1].Location.Y)
                 {
                     return 1;
                 }
@@ -500,6 +684,20 @@ namespace WindowsFormsApplication1
         private void enviarPosicion()
         {
             string mensaje = "8/" + this.numero_personaje + "-" + jugador[this.numero_personaje].Location.X + "-" + jugador[this.numero_personaje].Location.Y;
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+        }
+        public void guardarPosicionBombaOtro(string posicion)
+        {
+            string[] numper = posicion.Split('-');
+            int numero = Convert.ToInt32(numper[0]);
+            int posx = Convert.ToInt32(numper[1]);
+            int posy = Convert.ToInt32(numper[2]);
+            ponerBombaImagenOtro(numero,posx,posy);
+        }
+        private void enviarPosicionBomba()
+        {
+            string mensaje = "15/" + this.numero_personaje + "-" + jugador[this.numero_personaje].Location.X + "-" + jugador[this.numero_personaje].Location.Y;
             byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
         }
@@ -583,9 +781,83 @@ namespace WindowsFormsApplication1
                     enviarPosicion();
                     break;
                 case Keys.Space:
-                    IniciarBombaImagen(jugador[this.numero_personaje].Location.X, jugador[this.numero_personaje].Location.Y);
+                    ponerBombaImagen(this.numero_personaje, jugador[this.numero_personaje].Location.X, jugador[this.numero_personaje].Location.Y);
+                    enviarPosicionBomba();
                     break;
             }
+        }
+
+        private void timer3_Tick(object sender, EventArgs e)
+        {
+            if (cont3 == 0)
+            {
+                //timer1.Enabled = false;
+                timer3.Stop();
+                cont3 = 4;
+                for (int i = 0; i < 5; i++)
+                {
+                    explosion[i, 2].Visible = false;
+                }
+            }
+            else if (cont3 == 1)
+            {
+                bomba[2].Visible = false;
+                ponerExplosionImagen(2, bomba[2].Location.X, bomba[2].Location.Y);
+                int res = ComprobarTocadoExplosion(new Point(jugador[0].Location.X, jugador[0].Location.Y));
+                if (res == 1)
+                {
+                    PersonajeMuerto();
+                }
+                cont3--;
+            }
+            else
+            {
+                cont3--;
+            }
+        }
+        private void timer4_Tick(object sender, EventArgs e)
+        {
+            if (cont4 == 0)
+            {
+                //timer1.Enabled = false;
+                timer4.Stop();
+                cont4 = 4;
+                for (int i = 0; i < 5; i++)
+                {
+                    explosion[i, 3].Visible = false;
+                }
+            }
+            else if (cont4 == 1)
+            {
+                bomba[3].Visible = false;
+                ponerExplosionImagen(2, bomba[3].Location.X, bomba[3].Location.Y);
+                int res = ComprobarTocadoExplosion(new Point(jugador[0].Location.X, jugador[0].Location.Y));
+                if (res == 1)
+                {
+                    PersonajeMuerto();
+                }
+                cont3--;
+            }
+            else
+            {
+                cont3--;
+            }
+        }
+        delegate void PonerFrase(string frase);
+        public void mostrarFrase(string frase)
+        {
+            lbl_mensaje.Text = "Mensaje: " + frase;
+        }
+        public void guardarFrase(string frase)
+        {
+            PonerFrase delegadofrase = new PonerFrase(mostrarFrase);
+            lbl_mensaje.Invoke(delegadofrase,new object[]{frase});
+        }
+        private void btn_enviar_msj_Click(object sender, EventArgs e)
+        {
+            string mensaje = "16/" + box_msj.Text;
+            byte[] msg = System.Text.Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
         }
     }
 }

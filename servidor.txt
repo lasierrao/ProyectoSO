@@ -269,9 +269,27 @@ void enviarMensajeUsuarios(ListaInvi *l,char respuesta[10]){
 		}
 	}
 }
-void enviarPosiciones(ListaInvi *l,char posicion[20]){
+void enviarPosiciones(ListaInvi *l,char posicion[20], int socket){
 	char mensaje[80];
 	sprintf(mensaje, "9/%s",posicion);
+	for(int i = 0; i < l->num; i++){
+		if(socket != l->usuarios[i].socket){
+			write(l->usuarios[i].socket,mensaje,strlen(mensaje));
+		}
+	}	
+}
+void enviarPosicionesBomba(ListaInvi *l,char posicion[20], int socket){
+	char mensaje[80];
+	sprintf(mensaje, "10/%s",posicion);
+	for(int i = 0; i < l->num; i++){
+		if(socket != l->usuarios[i].socket){
+			write(l->usuarios[i].socket,mensaje,strlen(mensaje));
+		}
+	}	
+}
+void enviarFrase(ListaInvi *l,char frase[20],char nombre[20]){
+	char mensaje[80];
+	sprintf(mensaje, "11/%s - %s",nombre, frase);
 	for(int i = 0; i < l->num; i++){
 		write(l->usuarios[i].socket,mensaje,strlen(mensaje));
 	}	
@@ -320,7 +338,7 @@ void *AtenderCliente(void *socket)
 			char posicion[20];
 			strcpy(posicion, p);
 			printf("posicion: %s\n",posicion);
-			enviarPosiciones(&lista_partida, posicion);
+			enviarPosiciones(&lista_partida, posicion,sock_conn);
 			printf("Termina el case 8\n");
 			break;
 			//REGISTRARSE
@@ -475,6 +493,24 @@ void *AtenderCliente(void *socket)
 			}
 			printf("-----Fin de la comprobacion----\n");
 			printf("-Faltan por confirmar\n");
+			break;
+		case 15:
+			printf("Entra al case 15\n");
+			p = strtok(NULL, "/");
+			char posicionbom[20];
+			strcpy(posicionbom, p);
+			printf("posicion: %s\n",posicionbom);
+			enviarPosicionesBomba(&lista_partida, posicionbom, sock_conn);
+			printf("Termina el case 15\n");
+			break;
+		case 16:
+			printf("Entra al case 16\n");
+			p = strtok(NULL, "/");
+			char msj[20];
+			strcpy(msj, p);
+			printf("Mensaje: %s\n",msj);
+			enviarFrase(&lista_partida, msj, miNombre);
+			printf("Termina el case 15\n");
 			break;
 		case 20: //El usuario se desconecta y actualizamos lista Conectados
 			QuitUserConect(Usuario1,sock_conn,&lista_conec);

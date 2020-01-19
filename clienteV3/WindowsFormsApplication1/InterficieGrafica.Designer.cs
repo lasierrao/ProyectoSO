@@ -35,6 +35,11 @@
             this.label3 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.timer3 = new System.Windows.Forms.Timer(this.components);
+            this.timer4 = new System.Windows.Forms.Timer(this.components);
+            this.lbl_mensaje = new System.Windows.Forms.Label();
+            this.btn_enviar_msj = new System.Windows.Forms.Button();
+            this.box_msj = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // panel1
@@ -66,17 +71,58 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(704, 102);
+            this.label3.Location = new System.Drawing.Point(699, 99);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 3;
             this.label3.Text = "label3";
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // timer2
+            // 
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
+            // timer3
+            // 
+            this.timer3.Tick += new System.EventHandler(this.timer3_Tick);
+            // 
+            // lbl_mensaje
+            // 
+            this.lbl_mensaje.AutoSize = true;
+            this.lbl_mensaje.Location = new System.Drawing.Point(42, 493);
+            this.lbl_mensaje.Name = "lbl_mensaje";
+            this.lbl_mensaje.Size = new System.Drawing.Size(50, 13);
+            this.lbl_mensaje.TabIndex = 4;
+            this.lbl_mensaje.Text = "Mensaje:";
+            // 
+            // btn_enviar_msj
+            // 
+            this.btn_enviar_msj.Location = new System.Drawing.Point(353, 527);
+            this.btn_enviar_msj.Name = "btn_enviar_msj";
+            this.btn_enviar_msj.Size = new System.Drawing.Size(75, 23);
+            this.btn_enviar_msj.TabIndex = 5;
+            this.btn_enviar_msj.Text = "Enviar";
+            this.btn_enviar_msj.UseVisualStyleBackColor = true;
+            this.btn_enviar_msj.Click += new System.EventHandler(this.btn_enviar_msj_Click);
+            // 
+            // box_msj
+            // 
+            this.box_msj.Location = new System.Drawing.Point(45, 527);
+            this.box_msj.Name = "box_msj";
+            this.box_msj.Size = new System.Drawing.Size(274, 20);
+            this.box_msj.TabIndex = 6;
+            // 
             // InterficieGrafica
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(759, 479);
+            this.ClientSize = new System.Drawing.Size(759, 594);
+            this.Controls.Add(this.box_msj);
+            this.Controls.Add(this.btn_enviar_msj);
+            this.Controls.Add(this.lbl_mensaje);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -97,5 +143,10 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.Timer timer3;
+        private System.Windows.Forms.Timer timer4;
+        private System.Windows.Forms.Label lbl_mensaje;
+        private System.Windows.Forms.Button btn_enviar_msj;
+        private System.Windows.Forms.TextBox box_msj;
     }
 }

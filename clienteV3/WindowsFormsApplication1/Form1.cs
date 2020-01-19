@@ -304,6 +304,12 @@ namespace WindowsFormsApplication1
                     case 9:
                         ig.guardarPosicionOtroJugador(mensaje[1]);
                         break;
+                    case 10:
+                        ig.guardarPosicionBombaOtro(mensaje[1]);
+                        break;
+                    case 11:
+                        ig.guardarFrase(mensaje[1]);
+                        break;
                     default:
                         break;
                 }
