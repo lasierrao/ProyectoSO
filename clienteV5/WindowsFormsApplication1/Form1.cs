@@ -61,7 +61,7 @@ namespace WindowsFormsApplication1
 
         private void ponerEnMarchaJuego(string perso)
         {
-            ig = new InterficieGrafica(Convert.ToInt32(perso), this.server);
+            ig = new InterficieGrafica(Convert.ToInt32(perso), this.server,this.mi_nom);
             //ig.miPersonaje(Convert.ToInt32(mensaje[2]));
             ig.ShowDialog();
         }

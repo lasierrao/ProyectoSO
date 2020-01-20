@@ -40,6 +40,8 @@
             this.lbl_mensaje = new System.Windows.Forms.Label();
             this.btn_enviar_msj = new System.Windows.Forms.Button();
             this.box_msj = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // panel1
@@ -53,7 +55,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(699, 35);
+            this.label1.Location = new System.Drawing.Point(699, 84);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 1;
@@ -62,7 +64,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(699, 68);
+            this.label2.Location = new System.Drawing.Point(699, 117);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 2;
@@ -71,7 +73,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(699, 99);
+            this.label3.Location = new System.Drawing.Point(699, 148);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 3;
@@ -88,6 +90,10 @@
             // timer3
             // 
             this.timer3.Tick += new System.EventHandler(this.timer3_Tick);
+            // 
+            // timer4
+            // 
+            this.timer4.Tick += new System.EventHandler(this.timer4_Tick);
             // 
             // lbl_mensaje
             // 
@@ -115,11 +121,31 @@
             this.box_msj.Size = new System.Drawing.Size(274, 20);
             this.box_msj.TabIndex = 6;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(705, 180);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "label4";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(692, 28);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(42, 13);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "nombre";
+            // 
             // InterficieGrafica
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(759, 594);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.box_msj);
             this.Controls.Add(this.btn_enviar_msj);
             this.Controls.Add(this.lbl_mensaje);
@@ -148,5 +174,7 @@
         private System.Windows.Forms.Label lbl_mensaje;
         private System.Windows.Forms.Button btn_enviar_msj;
         private System.Windows.Forms.TextBox box_msj;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
